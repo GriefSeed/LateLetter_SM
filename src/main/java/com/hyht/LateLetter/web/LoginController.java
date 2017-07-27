@@ -10,7 +10,7 @@ public class LoginController {
 
     @RequestMapping("/")
     public String loginPage() {
-        return "test sucdess~您好，欢迎来到Spring boot";
+        return "<h1>TEST SUCCESS！迟书后台连通测试</h1>";
     }
 
 }
