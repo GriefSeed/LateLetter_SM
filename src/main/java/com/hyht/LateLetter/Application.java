@@ -7,11 +7,17 @@ import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.ComponentScan;
+
 import java.util.concurrent.TimeUnit;
 
 
 //@Configuration
 //@ComponentScan
+//mapper 接口扫描包
+@MapperScan("com.hyht.LateLetter.dao")
+@ComponentScan
 @EnableAutoConfiguration
 @SpringBootApplication
 public class Application{

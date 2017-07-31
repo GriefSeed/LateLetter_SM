@@ -1,2 +1,6 @@
+com\hyht\LateLetter\dao\TestDao.class
+com\hyht\LateLetter\service\impl\TestServiceImpl.class
 com\hyht\LateLetter\Application.class
+com\hyht\LateLetter\entity\Test.class
+com\hyht\LateLetter\service\TestService.class
 com\hyht\LateLetter\web\LoginController.class
