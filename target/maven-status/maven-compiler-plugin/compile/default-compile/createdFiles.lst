@@ -1,2 +1,3 @@
 com\hyht\LateLetter\Application.class
 com\hyht\LateLetter\web\LoginController.class
+com\hyht\LateLetter\web\BigFileHandlerController.class
