@@ -1,19 +1,63 @@
 package com.hyht.LateLetter.web;
 
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.io.*;
+import java.util.List;
+
+import com.hyht.LateLetter.util.Util;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.io.ClassPathResource;
+
+import javax.servlet.ServletContext;
 
 @RestController
 @RequestMapping("/BFH")
 public class BigFileHandlerController {
+
+
+    @Autowired
+    ServletContext servletContext;
+
     @RequestMapping("/addPic")
-    public String[] addPic(@RequestBody String[] picArray) throws Exception {
+    public List addPic(@RequestBody String[] picArray) throws Exception {
+        //定义数组，存储资源路径，用于返回给前端，存入数据库
+        List<String> filePathList = new ArrayList<String>();
 
-//        File file = new ClassPathResource("/picture/file_name.jpg").getFile();
-        for (String str : picArray) System.out.println(str);
+        // 遍历数组，取其中的BASE64图片格式，转换为文件后存储
+        for (String str : picArray) {
+            System.out.println(str);
+        }
+        for (int i = 0; i < picArray.length; i++) {
+            String imgName = ((new Date()).getTime() / 1000 + "") + i;
+            String[] d = picArray[i].split("base64,");
+            String suffix = Util.imgSuffix(d[0]);
+            // 使用spring的base64工具包转二进制
+            byte[] bs = Base64Utils.decodeFromString(d[1]);
+            //File file = new File(System.getProperty("webapp.root") + "\\img\\" + imgName + suffix);
+            //File file = new ClassPathResource("/picture/" + imgName + suffix).getFile();
+            File file = new File(servletContext.getRealPath("/pic/") + imgName + suffix);
+            file.createNewFile();
+            OutputStream os = new FileOutputStream(file);
+            os.write(bs);
+            os.flush();
+            os.close();
+            filePathList.add("picture/" + imgName + suffix);
+        }
+        return filePathList;
+    }
 
-        return null;
+    @RequestMapping("/pt")
+    public String pt() throws Exception {
+        File file = new ClassPathResource("pic/beauty.jpg", getClass()).getFile();
+        System.out.println(file.exists() + "  yessssssss~");
+        return "succ";
     }
 }
