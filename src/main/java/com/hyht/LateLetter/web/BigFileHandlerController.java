@@ -32,9 +32,9 @@ public class BigFileHandlerController {
         List<String> filePathList = new ArrayList<String>();
 
         // 遍历数组，取其中的BASE64图片格式，转换为文件后存储
-        for (String str : picArray) {
+       /* for (String str : picArray) {
             System.out.println(str);
-        }
+        }*/
         for (int i = 0; i < picArray.length; i++) {
             String imgName = ((new Date()).getTime() / 1000 + "") + i;
             String[] d = picArray[i].split("base64,");
