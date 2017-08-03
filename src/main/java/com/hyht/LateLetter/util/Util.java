@@ -58,8 +58,6 @@ public class Util {
         return SERVER_IP;
     }
 
-}
-
 
     public static String imgSuffix(String srcPrix) throws Exception {
         String suffix = "";
