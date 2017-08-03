@@ -51,7 +51,7 @@ public class BigFileHandlerController {
             os.write(bs);
             os.flush();
             os.close();
-            filePathList.add("http://" + Util.getLocalIP() + ":8081/pic/" + imgName + suffix);
+            filePathList.add("http://" + Util.getServerIp() + ":8081/pic/" + imgName + suffix);
         }
         return filePathList;
     }
