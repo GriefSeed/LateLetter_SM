@@ -43,7 +43,7 @@ public class BigFileHandlerController {
             byte[] bs = Base64Utils.decodeFromString(d[1]);
             //File file = new File(System.getProperty("webapp.root") + "\\img\\" + imgName + suffix);
             //File file = new ClassPathResource("/picture/" + imgName + suffix).getFile();
-            
+
             //上面的是使用Spring MVC配置时的用法，而这个servletContext通过注解引入默认配置，可以获取项目根路径
             File file = new File(servletContext.getRealPath("/pic/") + imgName + suffix);
             file.createNewFile();
@@ -51,7 +51,7 @@ public class BigFileHandlerController {
             os.write(bs);
             os.flush();
             os.close();
-            filePathList.add("picture/" + imgName + suffix);
+            filePathList.add("http://" + Util.getLocalIP() + ":8081/pic/" + imgName + suffix);
         }
         return filePathList;
     }
