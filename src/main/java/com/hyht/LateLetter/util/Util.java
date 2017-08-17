@@ -6,6 +6,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
+/**
+ * 自己写的工具包
+ */
 public class Util {
 
     //直接定义服务器IP
