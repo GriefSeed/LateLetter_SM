@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
 
-    @RequestMapping("/d")
+    @RequestMapping("/")
     public String loginPageTest() {
         System.out.println("热部署2333333");
         System.out.println("热部署2333333");
