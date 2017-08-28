@@ -5,7 +5,7 @@ import java.util.Date;
 public class Letter {
     private int letterId;
     private String title;
-    private String content;
+    private String letterContent;
     private Date deadline;
     private int status;
     private int userId;
@@ -29,12 +29,12 @@ public class Letter {
         this.title = title;
     }
 
-    public String getContent() {
-        return content;
+    public String getLetterContent() {
+        return letterContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setLetterContent(String letterContent) {
+        this.letterContent = letterContent;
     }
 
     public Date getDeadline() {
@@ -90,7 +90,7 @@ public class Letter {
         return "Letter{" +
                 "letterId=" + letterId +
                 ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
+                ", content='" + letterContent + '\'' +
                 ", deadline=" + deadline +
                 ", status=" + status +
                 ", userId=" + userId +
