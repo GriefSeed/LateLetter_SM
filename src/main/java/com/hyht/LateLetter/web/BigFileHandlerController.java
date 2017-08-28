@@ -1,22 +1,20 @@
 package com.hyht.LateLetter.web;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.io.*;
-import java.util.List;
-
 import com.hyht.LateLetter.util.Util;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/BFH")
@@ -56,10 +54,10 @@ public class BigFileHandlerController {
         return filePathList;
     }
 
-    @RequestMapping("/pt")
+   /* @RequestMapping("/pt")
     public String pt() throws Exception {
         File file = new ClassPathResource("pic/beauty.jpg", getClass()).getFile();
         System.out.println(file.exists() + "  yessssssss~");
         return "succ";
-    }
+    }*/
 }
