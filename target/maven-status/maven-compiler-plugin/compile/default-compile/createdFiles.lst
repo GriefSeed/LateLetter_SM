@@ -1,4 +1,9 @@
+com\hyht\LateLetter\entity\Letter.class
+com\hyht\LateLetter\service\impl\LetterServiceImpl.class
+com\hyht\LateLetter\util\Util.class
 com\hyht\LateLetter\Application.class
 com\hyht\LateLetter\web\LoginController.class
-com\hyht\LateLetter\util\Util.class
+com\hyht\LateLetter\service\LetterService.class
+com\hyht\LateLetter\web\WebPageController.class
 com\hyht\LateLetter\web\BigFileHandlerController.class
+com\hyht\LateLetter\dao\LetterDao.class
