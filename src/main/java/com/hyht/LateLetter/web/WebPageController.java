@@ -22,7 +22,9 @@ public class WebPageController {
         //return letterService.queryLetterById(Integer.parseInt(letterId)).toString() + " banana~";
         //System.out.println(letterService.queryLetterById(letterId));
         Letter letter = letterService.queryLetterById(Integer.parseInt(letterId));
-        model.addAttribute("letter_content", letter.toString() + " bitch2233");
+        model.addAttribute("letter", letter);
+        //model.addAttribute("letter_content", letterId + " bitch2233");
+
         return "show_letter";
     }
 }

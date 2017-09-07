@@ -12,6 +12,15 @@ public class Letter {
     private int publicFlag;
     private int readAuto;
     private int countDown;
+    private Date startDate;
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
 
     public int getLetterId() {
         return letterId;

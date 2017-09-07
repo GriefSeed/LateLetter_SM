@@ -6,7 +6,19 @@
     <title>Title</title>
 </head>
 <body>
-    <div><a th:text="${letter_content}"></a></div>
-    <div><a>hello~12122222</a></div>
+<div>
+    <a>标题：</a><a th:text="${letter.title}"></a>
+</div>
+
+<div>
+    <a>内容：</a><a th:text="${letter.letterContent}"></a>
+</div>
+
+<div>
+    <a>日期：</a><a th:text="${letter.startDate}"><a>~~~~~~~</a><a th:text="${letter.deadline}"></a></a>
+</div>
+<div>
+    <a style="size:50px">想查看更多附件内容请下载迟书APP！</a>
+</div>
 </body>
 </html>
