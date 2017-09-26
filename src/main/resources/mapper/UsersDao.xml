@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hyht.LateLetter.dao.UsersDao">
+
+    <!--生成主键并批量插入,oracle不支持insert批量插入-->
+    <insert id="insertUser" parameterType="users">
+        <selectKey resultType="long" keyProperty="userId"
+                   order="BEFORE">
+            SELECT LATELETTER.USERS_S.nextval AS userId from dual
+        </selectKey>
+        insert into LATELETTER.USERS
+        (user_id, nickname, user_password, sex, show_img, rest_time, phone_num, real_name, id_card, status)
+        values
+        (
+        #{userId},
+        #{nickname, jdbcType=VARCHAR},
+        #{userPassword},
+        #{sex},
+        #{showImg, jdbcType=VARCHAR},
+        #{restTime, jdbcType=VARCHAR},
+        #{phoneNum, jdbcType=VARCHAR},
+        #{realName, jdbcType=VARCHAR},
+        #{idCard, jdbcType=VARCHAR},
+        #{status}
+        )
+    </insert>
+    <!--
+            &lt;!&ndash; 批量删除 &ndash;&gt;
+            <delete id="delete" parameterType="java.util.List">
+                delete from t_user where id in (
+                <foreach collection="list" item="id" separator=",">
+                    #{id}
+                </foreach>
+                )
+            </delete>-->
+
+    <!--<resultMap type="Student" id="StudentResult">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+        <association property="address" column="addid" select="com.qbd.mapper.AddressMappers.findbyid">
+        </association>
+        <association property="grade" column="gid" select="com.qbd.mapper.GradeMappers.findbyid">
+        </association>
+    </resultMap>-->
+</mapper>

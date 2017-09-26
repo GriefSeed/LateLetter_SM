@@ -1,18 +1,22 @@
 package com.hyht.LateLetter.entity;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 
+@Component
 public class Letter {
-    private int letterId;
+    private long letterId;
     private String title;
     private String letterContent;
     private Date deadline;
+    private Date startDate;
     private int status;
     private int userId;
     private int publicFlag;
     private int readAuto;
     private int countDown;
-    private Date startDate;
+
 
     public Date getStartDate() {
         return startDate;
@@ -22,11 +26,11 @@ public class Letter {
         this.startDate = startDate;
     }
 
-    public int getLetterId() {
+    public long getLetterId() {
         return letterId;
     }
 
-    public void setLetterId(int letterId) {
+    public void setLetterId(long letterId) {
         this.letterId = letterId;
     }
 

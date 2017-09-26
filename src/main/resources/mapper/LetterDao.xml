@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hyht.LateLetter.dao.LetterDao">
+
+    <!--生成主键并批量插入,oracle不支持insert批量插入-->
+    <insert id="insertLetter" parameterType="letter">
+        <selectKey resultType="long" keyProperty="letterId"
+                   order="BEFORE">
+            SELECT LATELETTER.LETTER_S.nextval AS letterId from dual
+        </selectKey>
+        insert into LATELETTER.LETTER
+        (letter_id, title, letter_content, deadline, start_date, status, user_id, public_flag, read_auto, count_down)
+        values
+        (
+        #{letterId},
+        #{title},
+        #{letterContent},
+        #{deadline},
+        #{startDate},
+        #{status},
+        #{userId},
+        #{publicFlag},
+        #{readAuto},
+        #{countDown}
+        )
+    </insert>
+</mapper>
