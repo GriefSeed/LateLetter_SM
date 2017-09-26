@@ -23,6 +23,7 @@ public class MainController {
 
     /**
      * 登陆
+     *
      * @param u
      * @return
      */
@@ -31,10 +32,9 @@ public class MainController {
         Users users = usersDao.queryUserByPhoneNum(u.getPhoneNum());
 
         if (users != null) {
-            if(u.getUserPassword().equals(users.getUserPassword())){
+            if (u.getUserPassword().equals(users.getUserPassword())) {
                 return new ObjWithMsg(users, "T", "SUCCESS");
-            }
-            else
+            } else
                 return new ObjWithMsg(users, "F", "PASSWORD_ERROR");
         }
         return new ObjWithMsg(null, "F", "USER_NO_EXIST");
@@ -42,28 +42,32 @@ public class MainController {
 
     /**
      * 注册
+     *
      * @return
      */
     @RequestMapping("/register")
-    public Object register(@RequestBody Users u){
+    public Object register(@RequestBody Users u) {
         Users userTemp = new Users(u.getUserPassword(), u.getPhoneNum());
         //首次用户注册，手机号码即用户名
         userTemp.setNickname(userTemp.getPhoneNum());
         int result;
         try {
             result = usersService.regiter(userTemp);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new ObjWithMsg(null, "F", "REGISTER_ERROR");
         }
-        if(result == 1){
+        if (result == 1) {
             return new ObjWithMsg(userTemp, "T", "SUCCESS");
-        }
-        else {
+        } else {
             return new ObjWithMsg(null, "F", "PHONE_EXISTED");
         }
 
     }
 
+    @RequestMapping("/test")
+    public Object test() {
+        return "test success";
+    }
 
 }
