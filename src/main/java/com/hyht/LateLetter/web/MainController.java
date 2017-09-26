@@ -45,10 +45,10 @@ public class MainController {
      * @return
      */
     @RequestMapping("/register")
-    public Object register(String pw, String phoneNum){
-        Users userTemp = new Users(pw, phoneNum);
+    public Object register(@RequestBody Users u){
+        Users userTemp = new Users(u.getUserPassword(), u.getPhoneNum());
         //首次用户注册，手机号码即用户名
-        userTemp.setNickname(phoneNum);
+        userTemp.setNickname(userTemp.getPhoneNum());
         int result;
         try {
             result = usersService.regiter(userTemp);
