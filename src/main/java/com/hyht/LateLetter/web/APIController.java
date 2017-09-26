@@ -2,6 +2,7 @@ package com.hyht.LateLetter.web;
 
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.hyht.LateLetter.EnvirArgs;
 import com.hyht.LateLetter.util.Util;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class APIController {
             //File file = new ClassPathResource("/picture/" + imgName + suffix).getFile();
 
             //上面的是使用Spring MVC配置时的用法，而这个servletContext通过注解引入默认配置，可以获取项目根路径
-            File file = new File(servletContext.getRealPath("/extraFile/pic/") + imgName + suffix);
+            File file = new File(EnvirArgs.extraFilePath + "\\content_pic\\" + imgName + suffix);
             file.createNewFile();
             OutputStream os = new FileOutputStream(file);
             os.write(bs);
@@ -65,7 +66,8 @@ public class APIController {
         String createText = defaultKaptcha.createText();
         OutputStream os = null;
         try {
-            File file = new File(servletContext.getRealPath("/extraFile/checkImg/") + createText + ".jpg");
+            //要先创建文件夹，否则会报路径错误
+            File file = new File(EnvirArgs.extraFilePath + "\\checkImg\\" + createText + ".jpg");
             file.createNewFile();
             os = new FileOutputStream(file);
             //生成图片
@@ -79,7 +81,7 @@ public class APIController {
             e.printStackTrace();
         }
         JSONObject jb = new JSONObject();
-        jb.put("imgUrl","http://127.0.0.1/img");
+        jb.put("imgUrl",EnvirArgs.extraFileUrl + "/checkImg/" + createText + ".jpg" );
         jb.put("text",createText);
         //定义线程，70秒后删除该文件
 
