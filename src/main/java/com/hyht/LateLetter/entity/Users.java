@@ -1,5 +1,8 @@
 package com.hyht.LateLetter.entity;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Users {
     private long userId;
     private String nickname;
