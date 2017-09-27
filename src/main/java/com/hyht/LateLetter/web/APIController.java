@@ -3,8 +3,8 @@ package com.hyht.LateLetter.web;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.hyht.LateLetter.EnvirArgs;
+import com.hyht.LateLetter.entity.Users;
 import com.hyht.LateLetter.util.Util;
-import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,12 +81,12 @@ public class APIController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        JSONObject jb = new JSONObject();
+        /*JSONPObject jb = new JSONPObject();
         jb.put("imgUrl",EnvirArgs.extraFileUrl + "/checkImg/" + createText + ".jpg" );
-        jb.put("text",createText);
+        jb.put("text",createText);*/
         //定义线程，70秒后删除该文件
 
-        return jb;
+        return "jb";
     }
    /* @RequestMapping("/pt")
     public String pt() throws Exception {
@@ -94,4 +94,10 @@ public class APIController {
         System.out.println(file.exists() + "  yessssssss~");
         return "succ";
     }*/
+
+    @RequestMapping(value = "/test")
+    public Object test(@RequestBody Users u) throws Exception {
+        System.out.println("ddd");
+        return u.toString();
+    }
 }

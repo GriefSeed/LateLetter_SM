@@ -6,13 +6,10 @@ import com.hyht.LateLetter.dto.ObjWithMsg;
 import com.hyht.LateLetter.entity.Users;
 import com.hyht.LateLetter.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/main")
+@RequestMapping("/")
 public class MainController {
 
     @Autowired
@@ -66,9 +63,17 @@ public class MainController {
 
     }
 
-    @RequestMapping("/test")
-    public Object test() {
+
+    @RequestMapping(value = "/test")
+    public String test() throws Exception {
+        System.out.println("test");
         return "test success";
+    }
+
+    @RequestMapping(value = "/jsonTest")
+    public Object jsonTest(@RequestBody Users u) throws Exception {
+        System.out.println("jsonTest");
+        return u;
     }
 
 }
