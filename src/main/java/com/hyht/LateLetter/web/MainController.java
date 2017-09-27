@@ -8,6 +8,7 @@ import com.hyht.LateLetter.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,7 +46,7 @@ public class MainController {
      *
      * @return
      */
-    @RequestMapping("/register")
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
     public Object register(@RequestBody Users u) {
         Users userTemp = new Users(u.getUserPassword(), u.getPhoneNum());
         //首次用户注册，手机号码即用户名
