@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
@@ -30,7 +31,7 @@ public class APIController {
     @Autowired
     DefaultKaptcha defaultKaptcha;
 
-    @RequestMapping("/addPic")
+    @RequestMapping(value = "/addPic", method = RequestMethod.POST)
     public List addPic(@RequestBody String[] picArray) throws Exception {
         //定义数组，存储资源路径，用于返回给前端，存入数据库
         List<String> filePathList = new ArrayList<String>();
