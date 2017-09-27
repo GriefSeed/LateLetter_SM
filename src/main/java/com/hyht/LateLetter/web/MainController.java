@@ -5,12 +5,18 @@ import com.hyht.LateLetter.dao.UsersDao;
 import com.hyht.LateLetter.dto.ObjWithMsg;
 import com.hyht.LateLetter.entity.Users;
 import com.hyht.LateLetter.service.UsersService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
 public class MainController {
+
 
     @Autowired
     UsersDao usersDao;
@@ -18,6 +24,8 @@ public class MainController {
     @Autowired
     UsersService usersService;
 
+
+    private final static Logger logger = LoggerFactory.getLogger(MainController.class);
 
     /**
      * 登陆

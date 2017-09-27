@@ -2,13 +2,13 @@ package com.hyht.LateLetter.dto;
 
 
 public class ObjWithMsg {
-    private Object object;
+    private Object core;
     private String flag;
     private String msg;
 
 
-    public ObjWithMsg(Object object, String flag, String msg) {
-        this.object = object;
+    public ObjWithMsg(Object core, String flag, String msg) {
+        this.core = core;
         this.flag = flag;
         this.msg = msg;
     }
@@ -24,12 +24,12 @@ public class ObjWithMsg {
         this.flag = flag;
     }
 
-    public Object getObject() {
-        return object;
+    public Object getCore() {
+        return core;
     }
 
-    public void setObject(Object object) {
-        this.object = object;
+    public void setCore(Object core) {
+        this.core = core;
     }
 
     public String getMsg() {
