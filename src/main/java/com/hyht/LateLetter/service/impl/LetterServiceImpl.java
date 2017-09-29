@@ -29,9 +29,9 @@ public class LetterServiceImpl implements LetterService{
 
     //未完成
     @Override
-    public int insertLetter(Users u, Letter l) {
+    public int insertLetter(Letter l) {
         //spend user time
-        Integer restTimeBefore = Integer.parseInt(usersDao.queryUserRestTimeById(u.getUserId()));
+        Integer restTimeBefore = Integer.parseInt(usersDao.queryUserRestTimeById(l.getUserId()));
 
         double day = (l.getDeadline().getTime() - l.getStartDate().getTime())/(1000*3600*24);
         Integer costDay = (int)Math.ceil(day);
@@ -39,8 +39,10 @@ public class LetterServiceImpl implements LetterService{
             return 0;
         }else {
             //更新用户时间
+            String restTimeAfter = String.valueOf(restTimeBefore - costDay);
+            usersDao.updateUserRestTime(restTimeAfter, l.getUserId());
             //插入迟书
-            int result = letterDao.insertLetter(l);
+            letterDao.insertLetter(l);
             return 1;
         }
 

@@ -3,14 +3,17 @@ package com.hyht.LateLetter.web;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.hyht.LateLetter.EnvirArgs;
+import com.hyht.LateLetter.dao.BFileDao;
+import com.hyht.LateLetter.dto.ObjWithMsg;
+import com.hyht.LateLetter.entity.BFile;
 import com.hyht.LateLetter.util.Util;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Base64Utils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
@@ -31,7 +34,12 @@ public class APIController {
     @Autowired
     DefaultKaptcha defaultKaptcha;
 
-    @RequestMapping(value = "/addPic", method = RequestMethod.POST)
+    @Autowired
+    BFileDao bFileDao;
+
+    private final static Logger logger = LoggerFactory.getLogger(APIController.class);
+
+    @RequestMapping(value = "/addPic")
     public List addPic(@RequestBody String[] picArray) throws Exception {
         //定义数组，存储资源路径，用于返回给前端，存入数据库
         List<String> filePathList = new ArrayList<String>();
@@ -50,6 +58,7 @@ public class APIController {
             //File file = new ClassPathResource("/picture/" + imgName + suffix).getFile();
 
             //上面的是使用Spring MVC配置时的用法，而这个servletContext通过注解引入默认配置，可以获取项目根路径
+            String dir = "";
             File file = new File(EnvirArgs.extraFilePath + "\\content_pic\\" + imgName + suffix);
             file.createNewFile();
             OutputStream os = new FileOutputStream(file);
@@ -82,12 +91,63 @@ public class APIController {
             e.printStackTrace();
         }
         JSONObject jb = new JSONObject();
-        jb.put("imgUrl",EnvirArgs.extraFileUrl + "/checkImg/" + createText + ".jpg" );
-        jb.put("text",createText);
+        jb.put("imgUrl", EnvirArgs.extraFileUrl + "/checkImg/" + createText + ".jpg");
+        jb.put("text", createText);
         //定义线程，70秒后删除该文件
 
         return jb;
     }
+
+
+    /**
+     * 录入迟书附件—图片
+     *
+     * @return 返回FLAG
+     */
+    @RequestMapping(value = "/addPic")
+    public Object addLetter(@RequestParam("letterId") Long letterId,
+                            @RequestParam("picList") MultipartFile[] picList) {
+
+        //创建目录
+        String letterPath = "\\letterExtraFile\\" + letterId;
+        String filePathStr = EnvirArgs.extraFilePath + letterPath;
+        File filePath = new File(filePathStr);
+        if (!filePath.exists() && !filePath.isDirectory()) {
+            filePath.mkdirs();
+        }
+        ;
+        List<String> urlList = new ArrayList<String>();
+        //写入文件，返回url
+        try {
+            for (MultipartFile key : picList) {
+                int i = 0;
+                String fileName = "\\" + ((new Date()).getTime() / 1000 + "") + i + ".png";
+                File file = new File(filePathStr + fileName);
+                file.createNewFile();
+                OutputStream os = new FileOutputStream(file);
+                os.write(key.getBytes());
+                os.flush();
+                os.close();
+                urlList.add(letterPath + fileName);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ObjWithMsg(null, "F", "CREATE_FILE_ERROR");
+        }
+        //将url存入数据库
+        if (!urlList.isEmpty()) {
+            for (String url : urlList) {
+                bFileDao.insertBFile(new BFile(letterId, url, 1));
+            }
+
+        }
+        return new ObjWithMsg(null, "T", "SUCCESS");
+    }
+
+
+
+
    /* @RequestMapping("/pt")
     public String pt() throws Exception {
         File file = new ClassPathResource("pic/beauty.jpg", getClass()).getFile();

@@ -12,7 +12,7 @@ public class Letter {
     private Date deadline;
     private Date startDate;
     private int status;
-    private int userId;
+    private long userId;
     private int publicFlag;
     private int readAuto;
     private int countDown;
@@ -66,11 +66,11 @@ public class Letter {
         this.status = status;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

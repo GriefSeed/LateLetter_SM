@@ -1,8 +1,10 @@
 package com.hyht.LateLetter.web;
 
 
+import com.hyht.LateLetter.dao.LetterDao;
 import com.hyht.LateLetter.dao.UsersDao;
 import com.hyht.LateLetter.dto.ObjWithMsg;
+import com.hyht.LateLetter.entity.Letter;
 import com.hyht.LateLetter.entity.Users;
 import com.hyht.LateLetter.service.UsersService;
 import org.slf4j.Logger;
@@ -20,6 +22,9 @@ public class MainController {
 
     @Autowired
     UsersDao usersDao;
+
+    @Autowired
+    LetterDao letterDao;
 
     @Autowired
     UsersService usersService;
@@ -70,6 +75,20 @@ public class MainController {
         }
 
     }
+
+    /**
+     * 录入迟书主体
+     * @param letter
+     * @return
+     */
+    @RequestMapping(value = "/register")
+    public Object addLetterMain(@RequestBody Letter letter) {
+
+
+        return null;
+    }
+
+
 
 
     @RequestMapping(value = "/test")

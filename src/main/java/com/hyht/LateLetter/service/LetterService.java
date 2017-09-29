@@ -16,7 +16,7 @@ public interface LetterService {
      * @param l
      * @return
      */
-    int insertLetter(Users u, Letter l);
+    int insertLetter(Letter l);
 
     /**
      * 删除迟书，删除时扣除跟创建时一样的时间

@@ -27,11 +27,11 @@ public interface UsersDao {
 
     /**
      * 对用户的剩余时间进行操作,刷新用户的剩余时间
-     * @param users
+     * @param restTime, userId
      * @return
      */
     @Update("update Users SET rest_time=#{restTime} where user_id=#{userId}")
-    int updateUserRestTime(Users users);
+    int updateUserRestTime(@Param("restTime") String restTime,@Param("userId") Long userId);
 
     /**
      * 查用户剩余时间
