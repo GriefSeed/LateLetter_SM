@@ -11,7 +11,7 @@
             SELECT LATELETTER.LETTER_S.nextval AS letterId from dual
         </selectKey>
         insert into LATELETTER.LETTER
-        (letter_id, title, letter_content, deadline, start_date, status, user_id, public_flag, read_auto, count_down)
+        (letter_id, title, letter_content, deadline, start_date, status, user_id, public_flag, delete_flag, read_auto, count_down)
         values
         (
         #{letterId},
@@ -22,6 +22,7 @@
         #{status},
         #{userId},
         #{publicFlag},
+        #{deleteFlag},
         #{readAuto},
         #{countDown}
         )

@@ -120,10 +120,10 @@ public class MainController {
         Letter letter = lwf.getLetter();
         String[] fileList = lwf.getPicList();
 
-        System.out.println(letter.toString() + " bitch");
+        /*System.out.println(letter.toString() + " bitch");
         for (String pic : fileList) {
             System.out.println(pic.toString() + "meimeimei");
-        }
+        }*/
 
 
         //录入文件附件，先检测文件是否存在，再录入迟书主体
