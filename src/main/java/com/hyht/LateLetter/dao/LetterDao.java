@@ -13,6 +13,9 @@ public interface LetterDao {
     @Select("select * from letter where letter_id=#{letterId}")
     Letter queryLetterById(@Param("letterId") long letterId);
 
+    @Select("select * from letter where user_id=#{userId}")
+    List<Letter> queryLetterByUserId(@Param("userId") long userId);
+
     int insertLetter(Letter letter);
 
     @Delete("delete from LETTER where letter_id = #{letterId}")

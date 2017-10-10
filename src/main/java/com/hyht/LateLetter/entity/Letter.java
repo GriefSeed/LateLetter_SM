@@ -1,5 +1,6 @@
 package com.hyht.LateLetter.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -9,14 +10,32 @@ public class Letter {
     private long letterId;
     private String title;
     private String letterContent;
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date deadline;
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date startDate;
     private int status;
     private long userId;
     private int publicFlag;
+    private int deleteFlag;
     private int readAuto;
     private int countDown;
 
+    public Letter(String title, String letterContent, Date deadline, Date startDate, int status, long userId, int publicFlag, int deleteFlag, int readAuto, int countDown) {
+        this.title = title;
+        this.letterContent = letterContent;
+        this.deadline = deadline;
+        this.startDate = startDate;
+        this.status = status;
+        this.userId = userId;
+        this.publicFlag = publicFlag;
+        this.deleteFlag = deleteFlag;
+        this.readAuto = readAuto;
+        this.countDown = countDown;
+    }
+
+    public Letter() {
+    }
 
     public Date getStartDate() {
         return startDate;
@@ -80,6 +99,14 @@ public class Letter {
 
     public void setPublicFlag(int publicFlag) {
         this.publicFlag = publicFlag;
+    }
+
+    public int getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(int deleteFlag) {
+        this.deleteFlag = deleteFlag;
     }
 
     public int getReadAuto() {

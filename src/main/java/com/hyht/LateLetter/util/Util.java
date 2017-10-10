@@ -1,10 +1,7 @@
 package com.hyht.LateLetter.util;
 
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 
 /**
  * 自己写的工具包
@@ -53,5 +50,22 @@ public class Util {
             throw new Exception("上传图片格式不合法");
         }
         return suffix;
+    }
+
+    /**
+     * 返回文件类型
+     * @param suffix
+     * @return type 1图片，2视频，3音频
+     */
+    public static int fileTypeJudge(String suffix){
+        int type = 0;
+        String s = suffix.toLowerCase();
+        if(s.equals(".jpg") || s.equals(".png") || s.equals(".jpeg"))
+            type = 1;
+        if(s.equals(".mp3") || s.equals(".mp4") || s.equals(".rmvb") || s.equals(".flv"))
+            type = 2;
+        if(s.equals(".mp3"))
+            type = 3;
+        return type;
     }
 }

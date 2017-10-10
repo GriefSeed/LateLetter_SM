@@ -10,14 +10,14 @@
                    order="BEFORE">
             SELECT LATELETTER.BFILE_S.nextval AS bfileId from dual
         </selectKey>
-        insert ALL into LATELETTER.BFILE
+        insert into LATELETTER.BFILE
         (bfile_id, letter_id, file_url, file_type)
         values
         (
-        #{BFile.bfileId},
-        #{BFile.letterId},
-        #{BFile.fileUrl},
-        #{BFile.fileType}
+        #{bfileId},
+        #{letterId},
+        #{fileUrl},
+        #{fileType}
         )
     </insert>
 

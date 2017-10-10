@@ -19,9 +19,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/API")
@@ -100,13 +98,13 @@ public class APIController {
 
 
     /**
-     * 录入迟书附件—图片
+     * 录入迟书附件—图片、视频、录音
      *
      * @return 返回FLAG
      */
-    @RequestMapping(value = "/addPic")
+    @RequestMapping(value = "/addExtraFile")
     public Object addLetter(@RequestParam("letterId") Long letterId,
-                            @RequestParam("picList") MultipartFile[] picList) {
+                            @RequestParam("fileUrls") MultipartFile[] fileList) {
 
         //创建目录
         String letterPath = "\\letterExtraFile\\" + letterId;
@@ -116,19 +114,23 @@ public class APIController {
             filePath.mkdirs();
         }
         ;
-        List<String> urlList = new ArrayList<String>();
+        Map<String, Integer> map  = new HashMap<String, Integer>();
         //写入文件，返回url
         try {
-            for (MultipartFile key : picList) {
+            for (MultipartFile file : fileList) {
                 int i = 0;
-                String fileName = "\\" + ((new Date()).getTime() / 1000 + "") + i + ".png";
-                File file = new File(filePathStr + fileName);
-                file.createNewFile();
-                OutputStream os = new FileOutputStream(file);
-                os.write(key.getBytes());
+                //获取文件名和后缀
+                String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+                String fileName = "\\" + ((new Date()).getTime() / 1000 + "") + i + suffix;
+
+                File newFile = new File(filePathStr + fileName);
+                newFile.createNewFile();
+                OutputStream os = new FileOutputStream(newFile);
+                os.write(file.getBytes());
                 os.flush();
                 os.close();
-                urlList.add(letterPath + fileName);
+                //使用K-V方式存入url-type
+                map.put(letterPath + fileName, Util.fileTypeJudge(suffix));
             }
 
         } catch (IOException e) {
@@ -136,9 +138,9 @@ public class APIController {
             return new ObjWithMsg(null, "F", "CREATE_FILE_ERROR");
         }
         //将url存入数据库
-        if (!urlList.isEmpty()) {
-            for (String url : urlList) {
-                bFileDao.insertBFile(new BFile(letterId, url, 1));
+        if (!map.isEmpty()) {
+            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                bFileDao.insertBFile(new BFile(letterId, entry.getKey(), entry.getValue()));
             }
 
         }

@@ -14,7 +14,7 @@ public class mkdirAndMkdirTest {
     public void mkdirTest() throws Exception {
         //创建目录
         for (int j = 0; j < 2; j++) {
-            String letterPath = "d:\\game\\bitchDir\\good" + j;
+            String letterPath = "d:\\game\\bitchdir\\good" + j;
             File filePath = new File(letterPath);
             if (!filePath.exists() && !filePath.isDirectory()) {
                 filePath.mkdir();

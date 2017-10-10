@@ -54,6 +54,13 @@
             <classifier>jdk15</classifier>
         </dependency>
 
+        <!--额外添加fastJson解析Date数据-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.15</version>
+        </dependency>
+
         <!-- ojdbc 需要手动安装-->
         <dependency>
             <groupId>com.oracle</groupId>
