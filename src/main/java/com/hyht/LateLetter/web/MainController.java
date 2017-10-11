@@ -7,6 +7,7 @@ import com.hyht.LateLetter.dao.LetterDao;
 import com.hyht.LateLetter.dao.UsersDao;
 import com.hyht.LateLetter.dto.LetterWithFiles;
 import com.hyht.LateLetter.dto.ObjWithMsg;
+import com.hyht.LateLetter.dto.ReturnLetterWithFiles;
 import com.hyht.LateLetter.entity.BFile;
 import com.hyht.LateLetter.entity.Letter;
 import com.hyht.LateLetter.entity.Users;
@@ -21,10 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -110,9 +108,9 @@ public class MainController {
 
 
     /**
-     * 录入迟书主体和附件文件
+     * 录入迟书主体和附件文件, PS:还未扣除用户的时间
      *
-     * @param lwf   书信主体 + 图片附件
+     * @param lwf 书信主体 + 图片附件
      * @return 书信主体ID
      */
     @RequestMapping(value = "/addLetterWithExtraFile")
@@ -188,15 +186,27 @@ public class MainController {
         }
     }
 
-    //查询单封迟书的详细信息
+    //查询单封迟书的详细信息, 暂时只有图片
     @RequestMapping(value = "/querySingleLetter")
-    public Object querySingleLetter(@RequestBody long letterId) {
-        Letter l = letterDao.queryLetterById(letterId);
+    public Object querySingleLetter(@RequestBody String letterId) {
+        Letter l = letterDao.queryLetterById(Integer.valueOf(letterId));
         if (l != null) {
-            return new ObjWithMsg(l, "T", "SUCCESS");
+            List<BFile> fileList = bFileDao.querySingleLetterFiles(Integer.valueOf(letterId));
+            Map files;
+            if(!fileList.isEmpty()){
+                files = new HashMap<String, Integer>();
+                for (BFile bFile : fileList) {
+                    files.put(EnvirArgs.internetFileUrl + bFile.getFileUrl().replaceAll("\\\\","/"), bFile.getFileType());
+                }
+            }
+            else {
+                files = null;
+            }
+            return new ObjWithMsg(new ReturnLetterWithFiles(l, files), "T", "SUCCESS");
         } else {
             return new ObjWithMsg(null, "F", "NO_DATA_QUERY");
         }
+
     }
 
 

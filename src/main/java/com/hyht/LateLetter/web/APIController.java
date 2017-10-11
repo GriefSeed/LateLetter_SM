@@ -89,7 +89,7 @@ public class APIController {
             e.printStackTrace();
         }
         JSONObject jb = new JSONObject();
-        jb.put("imgUrl", EnvirArgs.extraFileUrl + "/checkImg/" + createText + ".jpg");
+        jb.put("imgUrl", EnvirArgs.internetFileUrl + "/checkImg/" + createText + ".jpg");
         jb.put("text", createText);
         //定义线程，70秒后删除该文件
 
