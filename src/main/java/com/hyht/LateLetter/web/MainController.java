@@ -175,7 +175,7 @@ public class MainController {
         }
     }
 
-    //查询用户个人所有迟书
+    //查询用户个人所有迟书, 仅用作列表展示
     @RequestMapping(value = "/queryUsersLetter")
     public Object queryUsersLetter(@RequestBody long userId) {
         List<Letter> lList = letterDao.queryLetterByUserId(userId);

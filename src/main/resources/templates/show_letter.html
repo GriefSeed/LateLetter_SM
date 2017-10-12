@@ -19,6 +19,13 @@
     <a>~~~~~~~</a>
     <a th:text="${letter.deadline}"></a></a>
 </div>
+
+<div th:if="${files!=null}">
+    <div th:each="files : ${files}">
+        <img th:src="${files.key}" style="high:500px;width:300px"></img></a>
+    </div>
+</div>
+
 <div>
     <a style="size:50px">想查看更多附件内容请下载迟书APP！</a>
 </div>
