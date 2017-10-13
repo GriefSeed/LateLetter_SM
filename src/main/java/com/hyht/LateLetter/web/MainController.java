@@ -156,8 +156,8 @@ public class MainController {
                     os.write(Base64Utils.decodeFromString(pic));
                     os.flush();
                     os.close();
-                    //使用K-V方式存入url-type, 1表示图片
-                    map.put(letterPath + fileName, 1);
+                    //使用K-V方式存入url-type, 1表示图片,注意这里要存入网络地址，不是硬盘相对地址，使用正斜杠
+                    map.put( (letterPath + fileName).replaceAll("\\\\","/"), 1);
                 }
 
             } catch (IOException e) {
@@ -196,7 +196,7 @@ public class MainController {
             if(!fileList.isEmpty()){
                 files = new HashMap<String, Integer>();
                 for (BFile bFile : fileList) {
-                    files.put(EnvirArgs.internetFileUrl + bFile.getFileUrl().replaceAll("\\\\","/"), bFile.getFileType());
+                    files.put(EnvirArgs.internetFileUrl + bFile.getFileUrl(), bFile.getFileType());
                 }
             }
             else {

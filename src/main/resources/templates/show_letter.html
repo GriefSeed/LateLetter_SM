@@ -22,7 +22,8 @@
 
 <div th:if="${files!=null}">
     <div th:each="files : ${files}">
-        <img th:src="${files.key}" style="high:500px;width:300px"></img></a>
+        <img th:src="${files.key}" style="high:500px;width:300px;float:left"></img></a>
+        <!--<a th:text="${files.key}"></a></a>-->
     </div>
 </div>
 

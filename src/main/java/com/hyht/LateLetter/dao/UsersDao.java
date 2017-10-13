@@ -42,4 +42,15 @@ public interface UsersDao {
     String queryUserRestTimeById(@Param("userId") long userId);
 
 
+    /**
+     * 上传或更新用户的头像
+     * @param showImg
+     * @param userId
+     * @return
+     */
+    @Update("update Users SET show_img=#{showImg} where user_id=#{userId}")
+    int updataUserShowImg(@Param("showImg") String showImg,@Param("userId") Long userId);
+
+
+
 }

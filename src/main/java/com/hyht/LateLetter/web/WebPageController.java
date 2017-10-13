@@ -38,7 +38,7 @@ public class WebPageController {
             if(!fileList.isEmpty()){
                 files = new HashMap<String, Integer>();
                 for (BFile bFile : fileList) {
-                    files.put(EnvirArgs.internetFileUrl + bFile.getFileUrl().replaceAll("\\\\","/"), bFile.getFileType());
+                    files.put(EnvirArgs.internetFileUrl + bFile.getFileUrl(), bFile.getFileType());
                 }
             }
             else {
