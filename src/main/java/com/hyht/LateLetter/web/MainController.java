@@ -192,7 +192,7 @@ public class MainController {
         Letter l = letterDao.queryLetterById(Integer.valueOf(letterId));
         if (l != null) {
             List<BFile> fileList = bFileDao.querySingleLetterFiles(Integer.valueOf(letterId));
-            Map files;
+            Map<String, Integer> files;
             if(!fileList.isEmpty()){
                 files = new HashMap<String, Integer>();
                 for (BFile bFile : fileList) {

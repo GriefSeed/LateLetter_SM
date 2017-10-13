@@ -34,7 +34,7 @@ public class WebPageController {
         Letter letter = letterService.queryLetterById(Integer.parseInt(letterId));
         if (letter != null) {
             List<BFile> fileList = bFileDao.querySingleLetterFiles(Integer.valueOf(letterId));
-            Map files;
+            Map<String, Integer> files;
             if(!fileList.isEmpty()){
                 files = new HashMap<String, Integer>();
                 for (BFile bFile : fileList) {
