@@ -26,7 +26,7 @@ public interface LetterDao {
 
 
     /**
-     * 查找已公开的迟书，用于公共面板
+     * 查找已公开或不公开的的迟书，用于公共面板
      * @param publicFlag
      * @return
      */

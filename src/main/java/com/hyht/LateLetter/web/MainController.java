@@ -157,7 +157,7 @@ public class MainController {
                     os.flush();
                     os.close();
                     //使用K-V方式存入url-type, 1表示图片,注意这里要存入网络地址，不是硬盘相对地址，使用正斜杠
-                    map.put( (letterPath + fileName).replaceAll("\\\\","/"), 1);
+                    map.put((letterPath + fileName).replaceAll("\\\\", "/"), 1);
                 }
 
             } catch (IOException e) {
@@ -193,13 +193,12 @@ public class MainController {
         if (l != null) {
             List<BFile> fileList = bFileDao.querySingleLetterFiles(Integer.valueOf(letterId));
             Map<String, Integer> files;
-            if(!fileList.isEmpty()){
+            if (!fileList.isEmpty()) {
                 files = new HashMap<String, Integer>();
                 for (BFile bFile : fileList) {
                     files.put(EnvirArgs.internetFileUrl + bFile.getFileUrl(), bFile.getFileType());
                 }
-            }
-            else {
+            } else {
                 files = null;
             }
             return new ObjWithMsg(new ReturnLetterWithFiles(l, files), "T", "SUCCESS");
@@ -207,6 +206,24 @@ public class MainController {
             return new ObjWithMsg(null, "F", "NO_DATA_QUERY");
         }
 
+    }
+
+
+    /**
+     * 查询公开信或私信
+     *
+     * @param publicFlag
+     * @return 返回书信列表
+     */
+    @RequestMapping("/queryLetterByPublicFlag")
+    public Object queryLetterByPublicFlag(@RequestBody String publicFlag) {
+        try{
+            List<Letter> letters = letterDao.queryLettersByPublicFlag(Integer.valueOf(publicFlag));
+            return new ObjWithMsg(letters, "T", "SUCCESS");
+        }catch (Exception e){
+            logger.error("queryLetterByPublicFlag: ", e);
+            return new ObjWithMsg(null, "F", "QUERY_LETTER_BY_PUBLICFLAG_ERROR");
+        }
     }
 
 
