@@ -15,7 +15,7 @@ public class Jobs {
     /**
      * 每天凌晨3点，清除验证码图片
      */
-    @Scheduled(cron="0 0 3 ? * *")
+    @Scheduled(cron="0 0 3 * * ?")
     public static void cleanCheckImg(){
         String dirStr = EnvirArgs.extraFilePath + "\\checkImg";
         File file = new File(dirStr);
