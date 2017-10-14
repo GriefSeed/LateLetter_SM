@@ -210,17 +210,26 @@ public class MainController {
 
 
     /**
-     * 查询公开信或私信
+     * 查询公开信到期和或未到期
      *
-     * @param publicFlag
+     * @param deadlineFlag
      * @return 返回书信列表
      */
-    @RequestMapping("/queryLetterByPublicFlag")
-    public Object queryLetterByPublicFlag(@RequestBody String publicFlag) {
-        try{
-            List<Letter> letters = letterDao.queryLettersByPublicFlag(Integer.valueOf(publicFlag));
+    @RequestMapping(value = "/queryPublicLetter")
+    public Object queryPublicLetter(@RequestBody String deadlineFlag) {
+        List<Letter> letters = null;
+        try {
+            //查询已到期的
+            if (deadlineFlag.equals("1")) {
+                letters = letterDao.queryPublicLetterAndBefore();
+            }
+            //查询未到期的
+            if (deadlineFlag.equals("0")) {
+                letters = letterDao.queryPublicLetterAndAfter();
+            }
+
             return new ObjWithMsg(letters, "T", "SUCCESS");
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("queryLetterByPublicFlag: ", e);
             return new ObjWithMsg(null, "F", "QUERY_LETTER_BY_PUBLICFLAG_ERROR");
         }
