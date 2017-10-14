@@ -29,14 +29,14 @@ public interface LetterDao {
      * 查找公开并已到期的迟书，用于公共面板
      * @return
      */
-    @Select("select * from LETTER WHERE deadline <= sysdate AND public_flag = 1")
+    @Select("select * from LETTER WHERE deadline <= sysdate AND public_flag = 1 order by start_date desc")
     List<Letter> queryPublicLetterAndBefore();
 
     /**
      * 查公开并未到期的迟书，用于公共面板
      * @return
      */
-    @Select("select * from LETTER WHERE deadline > sysdate AND public_flag = 1")
+    @Select("select * from LETTER WHERE deadline > sysdate AND public_flag = 1 order by start_date desc")
     List<Letter> queryPublicLetterAndAfter();
 
 }
