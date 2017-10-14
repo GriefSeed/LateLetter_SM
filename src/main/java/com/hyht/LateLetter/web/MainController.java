@@ -236,10 +236,24 @@ public class MainController {
     }
 
 
-    @RequestMapping(value = "/test")
-    public String test() throws Exception {
-        System.out.println("test");
-        return "test success";
+    @RequestMapping(value = "/test/{deadlineFlag}")
+    public Object test(@PathVariable("deadlineFlag") String deadlineFlag) throws Exception {
+        List<Letter> letters = null;
+        try {
+            //查询已到期的
+            if (deadlineFlag.equals("1")) {
+                letters = letterDao.queryPublicLetterAndBefore();
+            }
+            //查询未到期的
+            if (deadlineFlag.equals("0")) {
+                letters = letterDao.queryPublicLetterAndAfter();
+            }
+
+            return new ObjWithMsg(letters, "T", "SUCCESS");
+        } catch (Exception e) {
+            logger.error("queryLetterByPublicFlag: ", e);
+            return new ObjWithMsg(null, "F", "QUERY_LETTER_BY_PUBLICFLAG_ERROR");
+        }
     }
 
     @RequestMapping(value = "/jsonTest")
