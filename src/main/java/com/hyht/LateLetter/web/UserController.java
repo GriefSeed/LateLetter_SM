@@ -73,14 +73,17 @@ public class UserController {
 
     /**
      * 为保证事务的稳定性，建议前台直接将用户的新资料修改，后台只负责更新数据，不重复查询
-     *
+     * 更改用户昵称
      * @param u
      * @return
      */
-    @RequestMapping(value = "changeUserNickname")
+    @RequestMapping(value = "/changeUserNickname")
     public Object changeUserNickname(@RequestBody Users u) {
         try {
-            usersDao.updateUserNickname(u.getNickname(), u.getUserId());
+            int result = usersDao.updateUserNickname(u.getNickname(), u.getUserId());
+            if(result != 1){
+                throw new Exception("no_data_found");
+            }
         } catch (Exception e) {
             logger.error("changeUserNickname: ", e);
             return new ObjWithMsg(null, "F", "CHANGEUSERNICKNAME_ERROR");
@@ -89,14 +92,63 @@ public class UserController {
     }
 
 
-    @RequestMapping(value = "changeUserSex")
+    /**
+     * 更改用户性别
+     * @param u
+     * @return
+     */
+    @RequestMapping(value = "/changeUserSex")
     public Object changeUserSex(@RequestBody Users u) {
         try {
-            usersDao.updateUserSex(u.getSex(), u.getUserId());
+            int result = usersDao.updateUserSex(u.getSex(), u.getUserId());
+            if(result != 1){
+                throw new Exception("no_data_found");
+            }
         } catch (Exception e) {
             logger.error("changeUserSex: ", e);
             return new ObjWithMsg(null, "F", "CHANGEUSERSEX_ERROR");
         }
         return new ObjWithMsg(null, "T", "SUCCESS");
     }
+
+    /**
+     * 更改用户密钥
+     * @param u
+     * @return
+     */
+    @RequestMapping(value = "/changeUserSecretKey")
+    public Object changeUserSecretKey(@RequestBody Users u) {
+        try {
+            int result = usersDao.updateUserSecretKey(u.getSecretKey(), u.getUserId());
+            if(result != 1){
+                throw new Exception("no_data_found");
+            }
+        } catch (Exception e) {
+            logger.error("changeUserSecretKey: ", e);
+            return new ObjWithMsg(null, "F", "CHANGEUSERSECRETKEY_ERROR");
+        }
+        return new ObjWithMsg(null, "T", "SUCCESS");
+    }
+
+    /**
+     * 实名注册
+     * @param u
+     * @return
+     */
+    @RequestMapping(value = "/changeUserRealName")
+    public Object changeUserRealName(@RequestBody Users u) {
+        try {
+            int result = usersDao.updateUserRealName(u.getRealName(), u.getIdCard(), u.getUserId());
+            if(result != 1){
+                throw new Exception("no_data_found");
+            }
+        } catch (Exception e) {
+            logger.error("changeUserRealName: ", e);
+            return new ObjWithMsg(null, "F", "CHANGEUSERREALNAME_ERROR");
+        }
+        return new ObjWithMsg(null, "T", "SUCCESS");
+    }
+
+
+
 }

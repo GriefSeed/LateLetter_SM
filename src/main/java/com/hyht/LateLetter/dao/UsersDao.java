@@ -80,6 +80,19 @@ public interface UsersDao {
      * @param userId
      * @return
      */
-    @Update("update Users SET secretKey=#{secretKey} where user_id=#{userId}")
+    @Update("update Users SET secret_key=#{secretKey} where user_id=#{userId}")
     int updateUserSecretKey(@Param("secretKey") String secretKey, @Param("userId") Long userId);
+
+
+    /**
+     * 更新用户实名注册，同时修改状态status为1
+     * @param realName
+     * @param idCard
+     * @param userId
+     * @return
+     */
+    @Update("update Users SET real_name=#{realName}, id_card=#{idCard}, status=1 where user_id=#{userId}")
+    int updateUserRealName(@Param("realName") String realName, @Param("idCard") String idCard, @Param("userId") Long userId);
+
+
 }

@@ -243,24 +243,16 @@ public class MainController {
     @RequestMapping(value = "/test")
     public Object test(Users u) throws Exception {
         System.out.println(u.toString() + "+++++++++++++++++++");
-        Users userTemp = new Users(u.getUserPassword(), u.getPhoneNum());
-        //首次用户注册，手机号码即用户名
-        userTemp.setNickname(userTemp.getPhoneNum());
-        //头像默认
-        userTemp.setShowImg("/showImg/public_img.png");
-        int result;
         try {
-            result = usersService.regiter(userTemp);
-            userTemp.setShowImg(EnvirArgs.internetFileUrl + userTemp.getShowImg());
+            int result = usersDao.updateUserRealName(u.getRealName(), u.getIdCard(), u.getUserId());
+            if(result != 1){
+                throw new Exception("no_data_found");
+            }
         } catch (Exception e) {
-            logger.error("test: ", e);
-            return new ObjWithMsg(null, "F", "REGISTER_ERROR");
+            logger.error("changeUserRealName: ", e);
+            return new ObjWithMsg(null, "F", "CHANGEUSERREALNAME_ERROR");
         }
-        if (result == 1) {
-            return new ObjWithMsg(userTemp, "T", "SUCCESS");
-        } else {
-            return new ObjWithMsg(null, "F", "PHONE_EXISTED");
-        }
+        return new ObjWithMsg(null, "T", "SUCCESS");
     }
 
     @RequestMapping(value = "/jsonTest")

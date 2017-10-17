@@ -17,7 +17,7 @@ public class Users {
     private String secretKey;
     private int status;
 
-    public Users(String nickname, String userPassword, int sex, String showImg, String restTime, String phoneNum, String realName, String idCard, int vip, String secretKey,int status) {
+    public Users(String nickname, String userPassword, int sex, String showImg, String restTime, String phoneNum, String realName, String idCard, int vip, String secretKey, int status) {
         this.nickname = nickname;
         this.userPassword = userPassword;
         this.sex = sex;
@@ -39,6 +39,9 @@ public class Users {
     public Users() {
     }
 
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
     public long getUserId() {
         return userId;
@@ -145,6 +148,8 @@ public class Users {
                 ", phoneNum='" + phoneNum + '\'' +
                 ", realName='" + realName + '\'' +
                 ", idCard='" + idCard + '\'' +
+                ", vip=" + vip +
+                ", secretKey='" + secretKey + '\'' +
                 ", status=" + status +
                 '}';
     }

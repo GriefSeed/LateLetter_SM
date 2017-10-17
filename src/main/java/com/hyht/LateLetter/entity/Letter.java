@@ -37,6 +37,7 @@ public class Letter {
     public Letter() {
     }
 
+
     public Date getStartDate() {
         return startDate;
     }
