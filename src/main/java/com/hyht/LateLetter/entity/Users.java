@@ -13,8 +13,11 @@ public class Users {
     private String phoneNum;
     private String realName;
     private String idCard;
+    private int vip;
+    private String secretKey;
+    private int status;
 
-    public Users(String nickname, String userPassword, int sex, String showImg, String restTime, String phoneNum, String realName, String idCard, int status) {
+    public Users(String nickname, String userPassword, int sex, String showImg, String restTime, String phoneNum, String realName, String idCard, int vip, String secretKey,int status) {
         this.nickname = nickname;
         this.userPassword = userPassword;
         this.sex = sex;
@@ -23,6 +26,8 @@ public class Users {
         this.phoneNum = phoneNum;
         this.realName = realName;
         this.idCard = idCard;
+        this.vip = vip;
+        this.secretKey = secretKey;
         this.status = status;
     }
 
@@ -34,12 +39,10 @@ public class Users {
     public Users() {
     }
 
-    private int status;
 
     public long getUserId() {
         return userId;
     }
-
 
 
     public String getNickname() {
@@ -112,6 +115,22 @@ public class Users {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public int getVip() {
+        return vip;
+    }
+
+    public void setVip(int vip) {
+        this.vip = vip;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
     }
 
     @Override

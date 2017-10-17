@@ -57,8 +57,9 @@ public class MainController {
         if (users != null) {
             if (u.getUserPassword().equals(users.getUserPassword())) {
                 return new ObjWithMsg(users, "T", "SUCCESS");
-            } else
+            } else {
                 return new ObjWithMsg(users, "F", "PASSWORD_ERROR");
+            }
         }
         return new ObjWithMsg(null, "F", "USER_NO_EXIST");
     }
@@ -73,9 +74,12 @@ public class MainController {
         Users userTemp = new Users(u.getUserPassword(), u.getPhoneNum());
         //首次用户注册，手机号码即用户名
         userTemp.setNickname(userTemp.getPhoneNum());
+        //头像默认
+        userTemp.setShowImg("/showImg/public_img.png");
         int result;
         try {
             result = usersService.regiter(userTemp);
+            userTemp.setShowImg(EnvirArgs.internetFileUrl + userTemp.getShowImg());
         } catch (Exception e) {
             e.printStackTrace();
             return new ObjWithMsg(null, "F", "REGISTER_ERROR");
@@ -236,23 +240,26 @@ public class MainController {
     }
 
 
-    @RequestMapping(value = "/test/{deadlineFlag}")
-    public Object test(@PathVariable("deadlineFlag") String deadlineFlag) throws Exception {
-        List<Letter> letters = null;
+    @RequestMapping(value = "/test")
+    public Object test(Users u) throws Exception {
+        System.out.println(u.toString() + "+++++++++++++++++++");
+        Users userTemp = new Users(u.getUserPassword(), u.getPhoneNum());
+        //首次用户注册，手机号码即用户名
+        userTemp.setNickname(userTemp.getPhoneNum());
+        //头像默认
+        userTemp.setShowImg("/showImg/public_img.png");
+        int result;
         try {
-            //查询已到期的
-            if (deadlineFlag.equals("1")) {
-                letters = letterDao.queryPublicLetterAndBefore();
-            }
-            //查询未到期的
-            if (deadlineFlag.equals("0")) {
-                letters = letterDao.queryPublicLetterAndAfter();
-            }
-
-            return new ObjWithMsg(letters, "T", "SUCCESS");
+            result = usersService.regiter(userTemp);
+            userTemp.setShowImg(EnvirArgs.internetFileUrl + userTemp.getShowImg());
         } catch (Exception e) {
-            logger.error("queryLetterByPublicFlag: ", e);
-            return new ObjWithMsg(null, "F", "QUERY_LETTER_BY_PUBLICFLAG_ERROR");
+            e.printStackTrace();
+            return new ObjWithMsg(null, "F", "REGISTER_ERROR");
+        }
+        if (result == 1) {
+            return new ObjWithMsg(userTemp, "T", "SUCCESS");
+        } else {
+            return new ObjWithMsg(null, "F", "PHONE_EXISTED");
         }
     }
 

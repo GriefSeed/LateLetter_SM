@@ -11,19 +11,14 @@
             SELECT LATELETTER.USERS_S.nextval AS userId from dual
         </selectKey>
         insert into LATELETTER.USERS
-        (user_id, nickname, user_password, sex, show_img, rest_time, phone_num, real_name, id_card, status)
+        (user_id, nickname, user_password, show_img, phone_num)
         values
         (
         #{userId},
         #{nickname, jdbcType=VARCHAR},
         #{userPassword},
-        #{sex},
         #{showImg, jdbcType=VARCHAR},
-        #{restTime, jdbcType=VARCHAR},
-        #{phoneNum, jdbcType=VARCHAR},
-        #{realName, jdbcType=VARCHAR},
-        #{idCard, jdbcType=VARCHAR},
-        #{status}
+        #{phoneNum, jdbcType=VARCHAR}
         )
     </insert>
     <!--

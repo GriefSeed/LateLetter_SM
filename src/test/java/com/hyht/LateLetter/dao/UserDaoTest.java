@@ -30,6 +30,6 @@ public class UserDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        u = new Users("css", "css", 1, "http://www.baidu.com", "30000", "18814128750", "张大大", "4412035548313", 1);
+        //u = new Users("css", "css", 1, "http://www.baidu.com", "30000", "18814128750", "张大大", "4412035548313", 0, 1);
     }
 }
