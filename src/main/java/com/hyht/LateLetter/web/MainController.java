@@ -81,7 +81,7 @@ public class MainController {
             result = usersService.regiter(userTemp);
             userTemp.setShowImg(EnvirArgs.internetFileUrl + userTemp.getShowImg());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("register: ", e);
             return new ObjWithMsg(null, "F", "REGISTER_ERROR");
         }
         if (result == 1) {
@@ -253,7 +253,7 @@ public class MainController {
             result = usersService.regiter(userTemp);
             userTemp.setShowImg(EnvirArgs.internetFileUrl + userTemp.getShowImg());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("test: ", e);
             return new ObjWithMsg(null, "F", "REGISTER_ERROR");
         }
         if (result == 1) {
