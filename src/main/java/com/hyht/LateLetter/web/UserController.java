@@ -2,9 +2,11 @@ package com.hyht.LateLetter.web;
 
 
 import com.hyht.LateLetter.EnvirArgs;
+import com.hyht.LateLetter.dao.LetterDao;
 import com.hyht.LateLetter.dao.UsersDao;
 import com.hyht.LateLetter.dto.ObjWithMsg;
 import com.hyht.LateLetter.dto.UserIdWithShowImg;
+import com.hyht.LateLetter.entity.Letter;
 import com.hyht.LateLetter.entity.Users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/USER")
@@ -22,6 +25,8 @@ public class UserController {
 
     @Autowired
     UsersDao usersDao;
+    @Autowired
+    LetterDao letterDao;
 
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -74,6 +79,7 @@ public class UserController {
     /**
      * 为保证事务的稳定性，建议前台直接将用户的新资料修改，后台只负责更新数据，不重复查询
      * 更改用户昵称
+     *
      * @param u
      * @return
      */
@@ -81,7 +87,7 @@ public class UserController {
     public Object changeUserNickname(@RequestBody Users u) {
         try {
             int result = usersDao.updateUserNickname(u.getNickname(), u.getUserId());
-            if(result != 1){
+            if (result != 1) {
                 throw new Exception("no_data_found");
             }
         } catch (Exception e) {
@@ -94,6 +100,7 @@ public class UserController {
 
     /**
      * 更改用户性别
+     *
      * @param u
      * @return
      */
@@ -101,7 +108,7 @@ public class UserController {
     public Object changeUserSex(@RequestBody Users u) {
         try {
             int result = usersDao.updateUserSex(u.getSex(), u.getUserId());
-            if(result != 1){
+            if (result != 1) {
                 throw new Exception("no_data_found");
             }
         } catch (Exception e) {
@@ -113,6 +120,7 @@ public class UserController {
 
     /**
      * 更改用户密钥
+     *
      * @param u
      * @return
      */
@@ -120,7 +128,7 @@ public class UserController {
     public Object changeUserSecretKey(@RequestBody Users u) {
         try {
             int result = usersDao.updateUserSecretKey(u.getSecretKey(), u.getUserId());
-            if(result != 1){
+            if (result != 1) {
                 throw new Exception("no_data_found");
             }
         } catch (Exception e) {
@@ -132,6 +140,7 @@ public class UserController {
 
     /**
      * 实名注册
+     *
      * @param u
      * @return
      */
@@ -139,7 +148,7 @@ public class UserController {
     public Object changeUserRealName(@RequestBody Users u) {
         try {
             int result = usersDao.updateUserRealName(u.getRealName(), u.getIdCard(), u.getUserId());
-            if(result != 1){
+            if (result != 1) {
                 throw new Exception("no_data_found");
             }
         } catch (Exception e) {
@@ -152,6 +161,7 @@ public class UserController {
 
     /**
      * 更改用户密码
+     *
      * @param u
      * @return
      */
@@ -159,7 +169,7 @@ public class UserController {
     public Object changeUserPw(@RequestBody Users u) {
         try {
             int result = usersDao.updateUserPw(u.getUserPassword(), u.getUserId());
-            if(result != 1){
+            if (result != 1) {
                 throw new Exception("no_data_found");
             }
         } catch (Exception e) {
@@ -168,5 +178,39 @@ public class UserController {
         }
         return new ObjWithMsg(null, "T", "SUCCESS");
     }
+
+
+    //查询用户剩余时间
+    @RequestMapping(value = "/queryUserRestTime")
+    public Object queryUserRestTime(@RequestBody String userId) {
+        String restTime = null;
+        try {
+            restTime = usersDao.queryUserRestTimeById(Long.valueOf(userId));
+            if (restTime == null) {
+                throw new Exception("no_data_found");
+            }
+        } catch (Exception e) {
+            logger.error("queryUserRestTime: ", e);
+            return new ObjWithMsg(null, "F", "QUERYUSERRESTTIME_ERROR");
+        }
+        return new ObjWithMsg(restTime, "T", "SUCCESS");
+    }
+    //已写迟书
+    @RequestMapping(value = "/queryLetterByUserId")
+    public Object queryLetterByUserId(@RequestBody String userId) {
+        List<Letter> letters = null;
+        try {
+            letters = letterDao.queryLetterByUserId(Long.valueOf(userId));
+            if (letters.isEmpty()) {
+                return new ObjWithMsg(null, "T", "no_data_found");
+            }
+        } catch (Exception e) {
+            logger.error("queryLetterByUserId: ", e);
+            return new ObjWithMsg(null, "F", "QUERYLETTERBYUSERID_ERROR");
+        }
+        return new ObjWithMsg(letters, "T", "SUCCESS");
+    }
+    //添加收藏
+    //取消收藏
 
 }

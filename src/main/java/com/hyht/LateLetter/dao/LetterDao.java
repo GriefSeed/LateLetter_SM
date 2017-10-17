@@ -13,7 +13,7 @@ public interface LetterDao {
     @Select("select * from letter where letter_id=#{letterId}")
     Letter queryLetterById(@Param("letterId") long letterId);
 
-    @Select("select * from letter where user_id=#{userId}")
+    @Select("select * from letter where user_id=#{userId} order by start_date desc")
     List<Letter> queryLetterByUserId(@Param("userId") long userId);
 
     int insertLetter(Letter letter);

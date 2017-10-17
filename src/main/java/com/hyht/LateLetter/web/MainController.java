@@ -243,16 +243,17 @@ public class MainController {
     @RequestMapping(value = "/test")
     public Object test(Users u) throws Exception {
         System.out.println(u.toString() + "+++++++++++++++++++");
+        List<Letter> letters = null;
         try {
-            int result = usersDao.updateUserPw(u.getUserPassword(), u.getUserId());
-            if(result != 1){
-                throw new Exception("no_data_found");
+            letters = letterDao.queryLetterByUserId(Long.valueOf(u.getUserId()));
+            if (letters.isEmpty()) {
+                return new ObjWithMsg(null, "T", "no_data_found");
             }
         } catch (Exception e) {
-            logger.error("changeUserPw: ", e);
-            return new ObjWithMsg(null, "F", "CHANGEUSERPW_ERROR");
+            logger.error("queryLetterByUserId: ", e);
+            return new ObjWithMsg(null, "F", "QUERYLETTERBYUSERID_ERROR");
         }
-        return new ObjWithMsg(null, "T", "SUCCESS");
+        return new ObjWithMsg(letters, "T", "SUCCESS");
     }
 
     @RequestMapping(value = "/jsonTest")
