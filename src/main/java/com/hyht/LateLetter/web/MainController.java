@@ -244,13 +244,13 @@ public class MainController {
     public Object test(Users u) throws Exception {
         System.out.println(u.toString() + "+++++++++++++++++++");
         try {
-            int result = usersDao.updateUserRealName(u.getRealName(), u.getIdCard(), u.getUserId());
+            int result = usersDao.updateUserPw(u.getUserPassword(), u.getUserId());
             if(result != 1){
                 throw new Exception("no_data_found");
             }
         } catch (Exception e) {
-            logger.error("changeUserRealName: ", e);
-            return new ObjWithMsg(null, "F", "CHANGEUSERREALNAME_ERROR");
+            logger.error("changeUserPw: ", e);
+            return new ObjWithMsg(null, "F", "CHANGEUSERPW_ERROR");
         }
         return new ObjWithMsg(null, "T", "SUCCESS");
     }

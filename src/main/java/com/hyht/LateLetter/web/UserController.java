@@ -150,5 +150,23 @@ public class UserController {
     }
 
 
+    /**
+     * 更改用户密码
+     * @param u
+     * @return
+     */
+    @RequestMapping(value = "/changeUserPw")
+    public Object changeUserPw(@RequestBody Users u) {
+        try {
+            int result = usersDao.updateUserPw(u.getUserPassword(), u.getUserId());
+            if(result != 1){
+                throw new Exception("no_data_found");
+            }
+        } catch (Exception e) {
+            logger.error("changeUserPw: ", e);
+            return new ObjWithMsg(null, "F", "CHANGEUSERPW_ERROR");
+        }
+        return new ObjWithMsg(null, "T", "SUCCESS");
+    }
 
 }

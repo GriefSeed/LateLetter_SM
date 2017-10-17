@@ -95,4 +95,12 @@ public interface UsersDao {
     int updateUserRealName(@Param("realName") String realName, @Param("idCard") String idCard, @Param("userId") Long userId);
 
 
+    /**
+     * 更改用户密码
+     * @param userPassword
+     * @param userId
+     * @return
+     */
+    @Update("update Users SET user_password=#{userPassword} where user_id=#{userId}")
+    int updateUserPw(@Param("userPassword") String userPassword, @Param("userId") Long userId);
 }
