@@ -4,13 +4,17 @@ package com.hyht.LateLetter.web;
 import com.hyht.LateLetter.EnvirArgs;
 import com.hyht.LateLetter.dao.BFileDao;
 import com.hyht.LateLetter.dao.LetterDao;
+import com.hyht.LateLetter.dao.LetterUserRelationDao;
 import com.hyht.LateLetter.dao.UsersDao;
+import com.hyht.LateLetter.dto.LetterCollection;
 import com.hyht.LateLetter.dto.LetterWithFiles;
 import com.hyht.LateLetter.dto.ObjWithMsg;
 import com.hyht.LateLetter.dto.ReturnLetterWithFiles;
 import com.hyht.LateLetter.entity.BFile;
 import com.hyht.LateLetter.entity.Letter;
+import com.hyht.LateLetter.entity.LetterUserRelation;
 import com.hyht.LateLetter.entity.Users;
+import com.hyht.LateLetter.service.LetterService;
 import com.hyht.LateLetter.service.UsersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +44,12 @@ public class MainController {
 
     @Autowired
     UsersService usersService;
+
+    @Autowired
+    LetterUserRelationDao letterUserRelationDao;
+
+    @Autowired
+    LetterService letterService;
 
 
     private final static Logger logger = LoggerFactory.getLogger(MainController.class);
@@ -240,18 +250,105 @@ public class MainController {
     }
 
 
-    @RequestMapping(value = "/test")
-    public Object test(Users u) throws Exception {
-        System.out.println(u.toString() + "+++++++++++++++++++");
-        List<Letter> letters = null;
-        try {
-            letters = letterDao.queryLetterByUserId(Long.valueOf(u.getUserId()));
-            if (letters.isEmpty()) {
-                return new ObjWithMsg(null, "T", "no_data_found");
+    /**
+     * 增加收藏关系
+     * @param letterCollection
+     * @return
+     */
+    @RequestMapping(value = "/addCollection")
+    public Object addCollection(@RequestBody LetterCollection letterCollection){
+        // 1表示是收藏关系
+        LetterUserRelation letterUserRelation = new LetterUserRelation(letterCollection.getLetterId(), letterCollection.getUserId(), 1);
+        try{
+            int result = letterUserRelationDao.insertLetterUserRelation(letterUserRelation);
+            if(result != 1){
+                throw new Exception("ADDCOLLECTION_RESULT_NOT_ONLY_ONE");
             }
-        } catch (Exception e) {
-            logger.error("queryLetterByUserId: ", e);
-            return new ObjWithMsg(null, "F", "QUERYLETTERBYUSERID_ERROR");
+        }catch (Exception e){
+            logger.error("addCollection: ", e);
+            return new ObjWithMsg(null, "F", "INSERT_ERROR");
+        }
+        return new ObjWithMsg(null, "T", "SUCCESS");
+    }
+
+
+    /**
+     * 删除收藏关系
+     * @param letterCollection
+     * @return
+     */
+    @RequestMapping(value = "/deleteCollection")
+    public Object deleteCollection(@RequestBody LetterCollection letterCollection){
+        try{
+            int result = letterUserRelationDao.deleteLetterUserCollection(letterCollection.getLetterId(), letterCollection.getUserId());
+            if(result != 1){
+                throw new Exception("DELETECOLLECTION_RESULT_NOT_ONLY_ONE");
+            }
+        }catch (Exception e){
+            logger.error("deleteCollection: ", e);
+            return new ObjWithMsg(null, "F", "DELETE_ERROR");
+        }
+        return new ObjWithMsg(null, "T", "SUCCESS");
+
+    }
+
+
+    /**
+     * 查询用户收藏集
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/queryUserCollection")
+    public Object queryUserCollection(@RequestBody Long userId){
+        List<Long> userCollectionList = null;
+        try{
+            userCollectionList = letterUserRelationDao.queryCollectionById(userId);
+            if(userCollectionList.isEmpty()){
+                return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
+            }
+        }catch (Exception e){
+            logger.error("queryUserCollection: ", e);
+            return new ObjWithMsg(null, "F", "QUERYUSERCOLLECTION_ERROR");
+        }
+        return new ObjWithMsg(userCollectionList, "T", "SUCCESS");
+
+    }
+
+    /**
+     * 查询收藏集的所有迟书
+     * @param letterIdList
+     * @return
+     */
+    @RequestMapping(value = "/queryLettersCollection")
+    public Object queryLettersCollection(@RequestBody Long[] letterIdList){
+        List<Letter> letters = null;
+        try{
+            letters = letterService.queryLetterList(letterIdList);
+            if(letters.isEmpty()){
+                return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
+            }
+        }catch (Exception e){
+            logger.error("queryLettersCollection: ", e);
+            return new ObjWithMsg(null, "F", "QUERYLETTERSCOLLECTION_ERROR");
+        }
+        return new ObjWithMsg(letters, "T", "SUCCESS");
+
+    }
+
+
+
+
+    @RequestMapping(value = "/test")
+    public Object test(Long[] letterIdList) throws Exception {
+        List<Letter> letters = null;
+        try{
+            letters = letterService.queryLetterList(letterIdList);
+            if(letters.isEmpty()){
+                return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
+            }
+        }catch (Exception e){
+            logger.error("queryLettersCollection: ", e);
+            return new ObjWithMsg(null, "F", "QUERYLETTERSCOLLECTION_ERROR");
         }
         return new ObjWithMsg(letters, "T", "SUCCESS");
     }

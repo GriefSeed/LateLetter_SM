@@ -150,6 +150,9 @@ public class APIController {
 
 
 
+
+
+
    /* @RequestMapping("/pt")
     public String pt() throws Exception {
         File file = new ClassPathResource("pic/beauty.jpg", getClass()).getFile();

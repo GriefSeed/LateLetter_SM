@@ -25,4 +25,12 @@ public interface LetterService {
 
 
     List<Letter> queryAllPublicLetter();
+
+    /**
+     * 批量查询迟书集合
+     *
+     * @param letterIdList
+     * @return
+     */
+    public List<Letter> queryLetterList(Long[] letterIdList);
 }
