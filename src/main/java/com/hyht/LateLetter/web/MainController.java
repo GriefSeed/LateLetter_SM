@@ -6,15 +6,13 @@ import com.hyht.LateLetter.dao.BFileDao;
 import com.hyht.LateLetter.dao.LetterDao;
 import com.hyht.LateLetter.dao.LetterUserRelationDao;
 import com.hyht.LateLetter.dao.UsersDao;
-import com.hyht.LateLetter.dto.LetterCollection;
-import com.hyht.LateLetter.dto.LetterWithFiles;
-import com.hyht.LateLetter.dto.ObjWithMsg;
-import com.hyht.LateLetter.dto.ReturnLetterWithFiles;
+import com.hyht.LateLetter.dto.*;
 import com.hyht.LateLetter.entity.BFile;
 import com.hyht.LateLetter.entity.Letter;
 import com.hyht.LateLetter.entity.LetterUserRelation;
 import com.hyht.LateLetter.entity.Users;
 import com.hyht.LateLetter.service.LetterService;
+import com.hyht.LateLetter.service.LetterUserRelationService;
 import com.hyht.LateLetter.service.UsersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +45,9 @@ public class MainController {
 
     @Autowired
     LetterUserRelationDao letterUserRelationDao;
+
+    @Autowired
+    LetterUserRelationService letterUserRelationService;
 
     @Autowired
     LetterService letterService;
@@ -290,6 +291,19 @@ public class MainController {
         }
         return new ObjWithMsg(null, "T", "SUCCESS");
 
+    }
+
+    @RequestMapping(value = "/deleteUserCollectionList")
+    public Object deleteUserCollectionList(@RequestBody LetterCollectionList letterCollectionList){
+        try {
+            int result = letterUserRelationService.deleteUserCollectionList(letterCollectionList.getUserId(), letterCollectionList.getLetterId());
+            if(result != 1){
+                return new ObjWithMsg(null, "F", "DELETEUSERCOLLECTIONLIST_ERROR");
+            }
+        }catch (Exception e){
+            logger.error("deleteUserCollectionList:", e);
+        }
+        return new ObjWithMsg(null, "T", "SUCCESS");
     }
 
 

@@ -23,6 +23,8 @@ public interface LetterUserRelationDao {
     @Delete("delete from LETTER_USER_RELATION where letter_id = #{letterId} AND user_id=#{userId} AND relation=1")
     int deleteLetterUserCollection(@Param("letterId") Long letterId, @Param("userId") Long userId);
 
+
+
     /**
      * 查询用户收藏集，返还给前端
      * @param userId

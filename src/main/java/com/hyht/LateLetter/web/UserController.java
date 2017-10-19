@@ -210,7 +210,6 @@ public class UserController {
         }
         return new ObjWithMsg(letters, "T", "SUCCESS");
     }
-    //添加收藏
-    //取消收藏
+
 
 }
