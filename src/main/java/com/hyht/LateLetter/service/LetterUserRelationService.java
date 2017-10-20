@@ -7,4 +7,6 @@ public interface LetterUserRelationService {
      * @return
      */
     int deleteUserCollectionList(Long userId, Long[] letterIdList);
+
+
 }

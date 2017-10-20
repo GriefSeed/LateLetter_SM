@@ -316,7 +316,7 @@ public class MainController {
     public Object queryUserCollection(@RequestBody Long userId){
         List<Long> userCollectionList = null;
         try{
-            userCollectionList = letterUserRelationDao.queryCollectionById(userId);
+            userCollectionList = letterUserRelationDao.queryCollectionByUserId(userId);
             if(userCollectionList.isEmpty()){
                 return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
             }
@@ -330,14 +330,14 @@ public class MainController {
 
     /**
      * 查询收藏集的所有迟书
-     * @param letterIdList
+     * @param userId
      * @return
      */
     @RequestMapping(value = "/queryLettersCollection")
-    public Object queryLettersCollection(@RequestBody Long[] letterIdList){
+    public Object queryLettersCollection(@RequestBody String userId){
         List<Letter> letters = null;
         try{
-            letters = letterService.queryLetterList(letterIdList);
+            letters = letterUserRelationDao.queryCollectionLetters(Long.valueOf(userId));
             if(letters.isEmpty()){
                 return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
             }
@@ -349,22 +349,44 @@ public class MainController {
 
     }
 
-
-
-
-    @RequestMapping(value = "/test")
-    public Object test(Long[] letterIdList) throws Exception {
-        List<Letter> letters = null;
+    /**
+     * 检测该封迟书和用户是否有收藏关系
+     * @param letterCollection
+     * @return T代表有，F代表无
+     */
+    @RequestMapping(value = "/checkCollectionOrNot")
+    public Object checkCollectionOrNot(@RequestBody LetterCollection letterCollection){
         try{
-            letters = letterService.queryLetterList(letterIdList);
-            if(letters.isEmpty()){
-                return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
+            LetterUserRelation l = letterUserRelationDao.queryCollectionByLetterIdAndUserId(letterCollection.getLetterId(), letterCollection.getUserId());
+            if(l == null){
+                return new ObjWithMsg(0, "F", "NO_COLLECTION_FOUND");
+            }
+            else{
+                return new ObjWithMsg(1, "T", "SUCCESS");
             }
         }catch (Exception e){
             logger.error("queryLettersCollection: ", e);
             return new ObjWithMsg(null, "F", "QUERYLETTERSCOLLECTION_ERROR");
         }
-        return new ObjWithMsg(letters, "T", "SUCCESS");
+
+    }
+
+
+
+
+    @RequestMapping(value = "/test")
+    public Object test(String userId) throws Exception {
+        Users user = null;
+        try {
+            user = usersDao.queryUserById(Long.valueOf(userId));
+            if (user == null) {
+                return new ObjWithMsg(null, "F", "no_data_found");
+            }
+        } catch (Exception e) {
+            logger.error("queryUserAllInfo: ", e);
+            return new ObjWithMsg(null, "F", "QUERYLETTERBYUSERID_ERROR");
+        }
+        return new ObjWithMsg(user, "T", "SUCCESS");
     }
 
     @RequestMapping(value = "/jsonTest")

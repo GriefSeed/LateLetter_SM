@@ -2,12 +2,15 @@ package com.hyht.LateLetter.entity;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class LetterUserRelation {
     private Long lURelationId;
     private Long letterId;
     private Long userId;
     private int relation;
+    private Date startTime;
 
     public LetterUserRelation(Long letterId, Long userId, int relation) {
         this.letterId = letterId;
@@ -17,6 +20,8 @@ public class LetterUserRelation {
 
     public LetterUserRelation() {
     }
+
+
 
     public Long getlURelationId() {
         return lURelationId;
@@ -48,5 +53,13 @@ public class LetterUserRelation {
 
     public void setRelation(int relation) {
         this.relation = relation;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 }

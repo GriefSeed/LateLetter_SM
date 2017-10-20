@@ -202,13 +202,33 @@ public class UserController {
         try {
             letters = letterDao.queryLetterByUserId(Long.valueOf(userId));
             if (letters.isEmpty()) {
-                return new ObjWithMsg(null, "T", "no_data_found");
+                return new ObjWithMsg(null, "F", "no_data_found");
             }
         } catch (Exception e) {
             logger.error("queryLetterByUserId: ", e);
             return new ObjWithMsg(null, "F", "QUERYLETTERBYUSERID_ERROR");
         }
         return new ObjWithMsg(letters, "T", "SUCCESS");
+    }
+
+
+    /**
+     * 查询用户完整信息
+     * @param userId
+     * @return
+     */
+    public Object queryUserAllInfo(@RequestBody String userId){
+        Users user = null;
+        try {
+            user = usersDao.queryUserById(Long.valueOf(userId));
+            if (user == null) {
+                return new ObjWithMsg(null, "F", "no_data_found");
+            }
+        } catch (Exception e) {
+            logger.error("queryUserAllInfo: ", e);
+            return new ObjWithMsg(null, "F", "QUERYLETTERBYUSERID_ERROR");
+        }
+        return new ObjWithMsg(user, "T", "SUCCESS");
     }
 
 

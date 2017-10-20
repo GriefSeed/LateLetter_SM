@@ -13,6 +13,8 @@ public class LetterUserRelationServiceImpl implements LetterUserRelationService 
     @Autowired
     LetterUserRelationDao letterUserRelationDao;
 
+
+
     @Override
     public int deleteUserCollectionList(Long userId, Long[] letterIdList) {
         for(Long letterId : letterIdList){
@@ -20,4 +22,6 @@ public class LetterUserRelationServiceImpl implements LetterUserRelationService 
         }
         return 1;
     }
+
+
 }
