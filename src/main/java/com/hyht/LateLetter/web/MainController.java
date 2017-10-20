@@ -359,7 +359,7 @@ public class MainController {
         try{
             LetterUserRelation l = letterUserRelationDao.queryCollectionByLetterIdAndUserId(letterCollection.getLetterId(), letterCollection.getUserId());
             if(l == null){
-                return new ObjWithMsg(0, "F", "NO_COLLECTION_FOUND");
+                return new ObjWithMsg(0, "T", "NO_COLLECTION_FOUND");
             }
             else{
                 return new ObjWithMsg(1, "T", "SUCCESS");
@@ -375,18 +375,17 @@ public class MainController {
 
 
     @RequestMapping(value = "/test")
-    public Object test(String userId) throws Exception {
-        Users user = null;
+    public Object test(Users u) throws Exception {
         try {
-            user = usersDao.queryUserById(Long.valueOf(userId));
-            if (user == null) {
-                return new ObjWithMsg(null, "F", "no_data_found");
+            int result = usersDao.updateUserSecretKey(u.getSecretKey(), u.getUserId());
+            if (result != 1) {
+                throw new Exception("no_data_found");
             }
         } catch (Exception e) {
-            logger.error("queryUserAllInfo: ", e);
-            return new ObjWithMsg(null, "F", "QUERYLETTERBYUSERID_ERROR");
+            logger.error("changeUserSecretKey: ", e);
+            return new ObjWithMsg(null, "F", "CHANGEUSERSECRETKEY_ERROR");
         }
-        return new ObjWithMsg(user, "T", "SUCCESS");
+        return new ObjWithMsg(null, "T", "SUCCESS");
     }
 
     @RequestMapping(value = "/jsonTest")
