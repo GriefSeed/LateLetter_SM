@@ -224,12 +224,14 @@ public class UserController {
             user = usersDao.queryUserById(Long.valueOf(userId));
             if (user == null) {
                 return new ObjWithMsg(null, "F", "no_data_found");
+            }else{
+                user.setShowImg(EnvirArgs.internetFileUrl + user.getShowImg());
+                return new ObjWithMsg(user, "T", "SUCCESS");
             }
         } catch (Exception e) {
             logger.error("queryUserAllInfo: ", e);
             return new ObjWithMsg(null, "F", "QUERYLETTERBYUSERID_ERROR");
         }
-        return new ObjWithMsg(user, "T", "SUCCESS");
     }
 
 
