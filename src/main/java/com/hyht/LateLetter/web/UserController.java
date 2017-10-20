@@ -217,6 +217,7 @@ public class UserController {
      * @param userId
      * @return
      */
+    @RequestMapping(value = "/queryUserAllInfo")
     public Object queryUserAllInfo(@RequestBody String userId){
         Users user = null;
         try {
