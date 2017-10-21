@@ -389,23 +389,35 @@ public class MainController {
 
 
     @RequestMapping(value = "/test")
-    public Object test(String userId) throws Exception {
+    public Object test(String deadlineFlag) throws Exception {
         List<Letter> letters = null;
         List<LetterWithUser> letterWithUsers = null;
-        try{
-            letters = letterUserRelationDao.queryCollectionLetters(Long.valueOf(userId));
-            if(letters != null && !letters.isEmpty()){
-                letterWithUsers = new ArrayList<LetterWithUser>();
-                for(Letter letter : letters){
-                    letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
+        try {
+            //查询已到期的
+            if (deadlineFlag.equals("1")) {
+                letters = letterDao.queryPublicLetterAndBefore();
+                if(letters != null && !letters.isEmpty()){
+                    letterWithUsers = new ArrayList<LetterWithUser>();
+                    for(Letter letter : letters){
+                        letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
+                    }
                 }
-                return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
             }
-        }catch (Exception e){
-            logger.error("queryLettersCollection: ", e);
-            return new ObjWithMsg(null, "F", "QUERYLETTERSCOLLECTION_ERROR");
+            //查询未到期的
+            if (deadlineFlag.equals("0")) {
+                letters = letterDao.queryPublicLetterAndAfter();
+                if(letters != null && !letters.isEmpty()){
+                    letterWithUsers = new ArrayList<LetterWithUser>();
+                    for(Letter letter : letters){
+                        letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
+                    }
+                }
+            }
+            return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
+        } catch (Exception e) {
+            logger.error("queryLetterByPublicFlag: ", e);
+            return new ObjWithMsg(null, "F", "QUERY_LETTER_BY_PUBLICFLAG_ERROR");
         }
-        return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
     }
 
     @RequestMapping(value = "/jsonTest")
