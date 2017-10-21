@@ -39,4 +39,7 @@ public interface LetterDao {
     @Select("select * from LETTER WHERE deadline > sysdate AND public_flag = 1 AND rownum <= 50 order by start_date desc")
     List<Letter> queryPublicLetterAndAfter();
 
+
+
+
 }

@@ -7,10 +7,7 @@ import com.hyht.LateLetter.dao.LetterDao;
 import com.hyht.LateLetter.dao.LetterUserRelationDao;
 import com.hyht.LateLetter.dao.UsersDao;
 import com.hyht.LateLetter.dto.*;
-import com.hyht.LateLetter.entity.BFile;
-import com.hyht.LateLetter.entity.Letter;
-import com.hyht.LateLetter.entity.LetterUserRelation;
-import com.hyht.LateLetter.entity.Users;
+import com.hyht.LateLetter.entity.*;
 import com.hyht.LateLetter.service.LetterService;
 import com.hyht.LateLetter.service.LetterUserRelationService;
 import com.hyht.LateLetter.service.UsersService;
@@ -233,17 +230,29 @@ public class MainController {
     @RequestMapping(value = "/queryPublicLetter")
     public Object queryPublicLetter(@RequestBody String deadlineFlag) {
         List<Letter> letters = null;
+        List<LetterWithUser> letterWithUsers = null;
         try {
             //查询已到期的
             if (deadlineFlag.equals("1")) {
                 letters = letterDao.queryPublicLetterAndBefore();
+                if(letters != null && !letters.isEmpty()){
+                    letterWithUsers = new ArrayList<LetterWithUser>();
+                    for(Letter letter : letters){
+                        letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
+                    }
+                }
             }
             //查询未到期的
             if (deadlineFlag.equals("0")) {
                 letters = letterDao.queryPublicLetterAndAfter();
+                if(letters != null && !letters.isEmpty()){
+                    letterWithUsers = new ArrayList<LetterWithUser>();
+                    for(Letter letter : letters){
+                        letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
+                    }
+                }
             }
-
-            return new ObjWithMsg(letters, "T", "SUCCESS");
+            return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
         } catch (Exception e) {
             logger.error("queryLetterByPublicFlag: ", e);
             return new ObjWithMsg(null, "F", "QUERY_LETTER_BY_PUBLICFLAG_ERROR");
@@ -336,16 +345,21 @@ public class MainController {
     @RequestMapping(value = "/queryLettersCollection")
     public Object queryLettersCollection(@RequestBody String userId){
         List<Letter> letters = null;
+        List<LetterWithUser> letterWithUsers = null;
         try{
             letters = letterUserRelationDao.queryCollectionLetters(Long.valueOf(userId));
-            if(letters.isEmpty()){
-                return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
+            if(letters != null && !letters.isEmpty()){
+                letterWithUsers = new ArrayList<LetterWithUser>();
+                for(Letter letter : letters){
+                    letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
+                }
+                return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
             }
         }catch (Exception e){
             logger.error("queryLettersCollection: ", e);
             return new ObjWithMsg(null, "F", "QUERYLETTERSCOLLECTION_ERROR");
         }
-        return new ObjWithMsg(letters, "T", "SUCCESS");
+        return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
 
     }
 
@@ -375,17 +389,23 @@ public class MainController {
 
 
     @RequestMapping(value = "/test")
-    public Object test(Users u) throws Exception {
-        try {
-            int result = usersDao.updateUserSecretKey(u.getSecretKey(), u.getUserId());
-            if (result != 1) {
-                throw new Exception("no_data_found");
+    public Object test(String userId) throws Exception {
+        List<Letter> letters = null;
+        List<LetterWithUser> letterWithUsers = null;
+        try{
+            letters = letterUserRelationDao.queryCollectionLetters(Long.valueOf(userId));
+            if(letters != null && !letters.isEmpty()){
+                letterWithUsers = new ArrayList<LetterWithUser>();
+                for(Letter letter : letters){
+                    letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
+                }
+                return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
             }
-        } catch (Exception e) {
-            logger.error("changeUserSecretKey: ", e);
-            return new ObjWithMsg(null, "F", "CHANGEUSERSECRETKEY_ERROR");
+        }catch (Exception e){
+            logger.error("queryLettersCollection: ", e);
+            return new ObjWithMsg(null, "F", "QUERYLETTERSCOLLECTION_ERROR");
         }
-        return new ObjWithMsg(null, "T", "SUCCESS");
+        return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
     }
 
     @RequestMapping(value = "/jsonTest")
