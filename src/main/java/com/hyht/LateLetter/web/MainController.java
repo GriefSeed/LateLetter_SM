@@ -131,21 +131,17 @@ public class MainController {
         Letter letter = lwf.getLetter();
         String[] fileList = lwf.getPicList();
 
-        /*System.out.println(letter.toString() + " bitch");
-        for (String pic : fileList) {
-            System.out.println(pic.toString() + "meimeimei");
-        }*/
 
+        try {
+            //录入letter，获取letterId，然后对文件进行存储
+            letterDao.insertLetter(letter);
+        } catch (Exception e) {
+            logger.error("addLetterWithExtraFile: ", e);
+            return new ObjWithMsg(null, "F", "INSERT_LETTER_MAIN_ERROR");
+        }
 
-        //录入文件附件，先检测文件是否存在，再录入迟书主体
-        if (fileList != null || fileList.length > 0) {
-            try {
-                //录入letter，获取letterId，然后对文件进行存储
-                letterDao.insertLetter(letter);
-            } catch (Exception e) {
-                logger.error("addLetterWithExtraFile: ", e);
-                return new ObjWithMsg(null, "F", "INSERT_LETTER_MAIN_ERROR");
-            }
+        //录入文件附件，先检测文件是否存在
+        if (fileList != null && fileList.length > 0) {
 
             //创建目录
             String letterPath = "\\letterExtraFile\\" + letter.getLetterId();
@@ -183,9 +179,10 @@ public class MainController {
                 }
             }
             return new ObjWithMsg(letter.getLetterId(), "T", "SUCCESS");
-        } else {
-            return new ObjWithMsg(null, "F", "NO_FILE_UPLOAD");
         }
+
+        return new ObjWithMsg(letter.getLetterId(), "T", "SUCCESS");
+
     }
 
 
