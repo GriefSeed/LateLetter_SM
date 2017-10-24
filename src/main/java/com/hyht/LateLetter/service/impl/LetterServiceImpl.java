@@ -37,6 +37,7 @@ public class LetterServiceImpl implements LetterService {
         double day = (l.getDeadline().getTime() - l.getStartDate().getTime()) / (1000 * 3600 * 24);
         //不足一天算一天
         Integer costDay = (int) Math.ceil(day);
+        //时间不够的，插入失败
         if (costDay > restTimeBefore) {
             return 0;
         } else {
@@ -67,8 +68,22 @@ public class LetterServiceImpl implements LetterService {
 
 
     @Override
-    public int deleteLetter(Users u, Letter l) {
-        return 0;
+    public int deleteLetter(Long letterId, Long userId) {
+        int result = 0;
+        //先判断用户时间是否足够
+        Users uTemp = usersDao.queryUserById(userId);
+        Letter l = letterDao.queryLetterById(letterId);
+        double day = (l.getDeadline().getTime() - l.getStartDate().getTime()) / (1000 * 3600 * 24);
+        //不足一天算一天
+        Integer costDay = (int) Math.ceil(day);
+        Integer userRestTime = Integer.valueOf(uTemp.getRestTime());
+        //当用户时间大于或等于该封迟书的封存时间时，才允许删除
+        if (userRestTime >= costDay) {
+            //等价扣除相同时间
+            uTemp.setRestTime(String.valueOf(userRestTime - costDay));
+            result = letterDao.deleteLetterById(letterId);
+        }
+        return result;
     }
 
     @Override

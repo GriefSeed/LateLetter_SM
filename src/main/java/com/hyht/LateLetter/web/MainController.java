@@ -64,9 +64,10 @@ public class MainController {
 
         if (users != null) {
             if (u.getUserPassword().equals(users.getUserPassword())) {
+                users.setShowImg(EnvirArgs.internetFileUrl + users.getShowImg());
                 return new ObjWithMsg(users, "T", "SUCCESS");
             } else {
-                return new ObjWithMsg(users, "F", "PASSWORD_ERROR");
+                return new ObjWithMsg(null, "F", "PASSWORD_ERROR");
             }
         }
         return new ObjWithMsg(null, "F", "USER_NO_EXIST");
@@ -107,7 +108,7 @@ public class MainController {
      * @return 书信主体ID
      */
     @RequestMapping(value = "/addLetter")
-    public Object addLetter(@RequestParam("extraData") Letter letter) {
+    public Object addLetter(@RequestParam("letter") Letter letter) {
         try {
             letterDao.insertLetter(letter);
         } catch (Exception e) {
@@ -142,7 +143,7 @@ public class MainController {
                 //录入letter，获取letterId，然后对文件进行存储
                 letterDao.insertLetter(letter);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("addLetterWithExtraFile: ", e);
                 return new ObjWithMsg(null, "F", "INSERT_LETTER_MAIN_ERROR");
             }
 
@@ -185,6 +186,53 @@ public class MainController {
         } else {
             return new ObjWithMsg(null, "F", "NO_FILE_UPLOAD");
         }
+    }
+
+
+    /**
+     * 删除迟书主表、清空文件表和附带文件，暂时没有扣除用户时间
+     * @param letterIdWithUserId
+     * @return 0 表示失败，1 表示成功
+     */
+    @RequestMapping(value = "/deleteLetterWithExtraFile")
+    public Object deleteLetterWithExtraFile(@RequestBody LetterIdWithUserId letterIdWithUserId){
+        int result = 0;
+        Long userId = letterIdWithUserId.getUserId();
+        Long letterId = letterIdWithUserId.getLetterId();
+        //删除迟书
+        try{
+            result = letterDao.deleteLetterById(letterId);
+            //删除BFile表里的文件索引
+            if(result == 1){
+                bFileDao.deleteBfileByLetterId(letterId);
+            }
+            else{
+                throw new Exception("===============no_letter_found=================");
+            }
+        }catch (Exception e){
+            logger.error("===============deleteLetterWithExtraFile:================ ", e);
+            return new ObjWithMsg(null, "F", "删除信件主体失败");
+        }
+        try {
+            //最后直接删除以信件ID命名的文件夹，有文件夹肯定有文件，没有文件夹就是没有文件
+            String dirStr = EnvirArgs.extraFilePath + "\\letterExtraFile\\" + letterId;
+            File file = new File(dirStr);
+            //文件夹不存在也行，但files 会为 null
+            File[] files = file.listFiles();
+            if(files != null && files.length > 0){
+                for(File temp : files){
+                    if(temp.isFile()){
+                        temp.delete();
+                    }
+                }
+                //最后删除目录
+                file.delete();
+            }
+        }catch (Exception e){
+            logger.error("===============deleteLetterWithExtraFile:================ ", e);
+            return new ObjWithMsg(null, "F", "删除信件文件失败");
+        }
+        return new ObjWithMsg(result, "T", "SUCCESS");
     }
 
     //查询用户个人所有迟书, 仅用作列表展示
@@ -389,35 +437,44 @@ public class MainController {
 
 
     @RequestMapping(value = "/test")
-    public Object test(String deadlineFlag) throws Exception {
-        List<Letter> letters = null;
-        List<LetterWithUser> letterWithUsers = null;
-        try {
-            //查询已到期的
-            if (deadlineFlag.equals("1")) {
-                letters = letterDao.queryPublicLetterAndBefore();
-                if(letters != null && !letters.isEmpty()){
-                    letterWithUsers = new ArrayList<LetterWithUser>();
-                    for(Letter letter : letters){
-                        letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
-                    }
-                }
+    public Object test(LetterIdWithUserId letterIdWithUserId) throws Exception {
+        int result = 0;
+        Long userId = letterIdWithUserId.getUserId();
+        Long letterId = letterIdWithUserId.getLetterId();
+        //删除迟书
+        try{
+            result = letterDao.deleteLetterById(letterId);
+            //删除BFile表里的文件索引
+            if(result == 1){
+                bFileDao.deleteBfileByLetterId(letterId);
             }
-            //查询未到期的
-            if (deadlineFlag.equals("0")) {
-                letters = letterDao.queryPublicLetterAndAfter();
-                if(letters != null && !letters.isEmpty()){
-                    letterWithUsers = new ArrayList<LetterWithUser>();
-                    for(Letter letter : letters){
-                        letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
-                    }
-                }
+            else{
+                throw new Exception("===============no_letter_found=================");
             }
-            return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
-        } catch (Exception e) {
-            logger.error("queryLetterByPublicFlag: ", e);
-            return new ObjWithMsg(null, "F", "QUERY_LETTER_BY_PUBLICFLAG_ERROR");
+        }catch (Exception e){
+            logger.error("===============deleteLetterWithExtraFile:================ ", e);
+            return new ObjWithMsg(null, "F", "删除信件主体失败");
         }
+        try {
+            //最后直接删除以信件ID命名的文件夹，有文件夹肯定有文件，没有文件夹就是没有文件
+            String dirStr = EnvirArgs.extraFilePath + "\\letterExtraFile\\" + letterId;
+            File file = new File(dirStr);
+            //文件夹不存在也行，但files 会为 null
+            File[] files = file.listFiles();
+            if(files != null && files.length > 0){
+                for(File temp : files){
+                    if(temp.isFile()){
+                        temp.delete();
+                    }
+                }
+                //最后删除目录
+                file.delete();
+            }
+        }catch (Exception e){
+            logger.error("===============deleteLetterWithExtraFile:================ ", e);
+            return new ObjWithMsg(null, "F", "删除信件文件失败");
+        }
+        return new ObjWithMsg(result, "T", "SUCCESS");
     }
 
     @RequestMapping(value = "/jsonTest")

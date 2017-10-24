@@ -1,7 +1,6 @@
 package com.hyht.LateLetter.service;
 
 import com.hyht.LateLetter.entity.Letter;
-import com.hyht.LateLetter.entity.Users;
 
 import java.util.List;
 
@@ -19,9 +18,9 @@ public interface LetterService {
 
     /**
      * 删除迟书，删除时扣除跟创建时一样的时间
-     * @return
+     * @return 0 表示失败（时间不够）， 1 表示成功
      */
-    int deleteLetter(Users u, Letter l);
+    int deleteLetter(Long letterId, Long userId);
 
 
     List<Letter> queryAllPublicLetter();
