@@ -53,4 +53,22 @@ public interface LetterUserRelationDao {
     @Select("select * from LETTER_USER_RELATION where user_id=#{userId} AND letter_id=#{letterId} AND relation=1")
     LetterUserRelation queryCollectionByLetterIdAndUserId(@Param("letterId") Long letterId, @Param("userId") Long userId);
 
+
+    /**
+     * 查询用户收信箱
+     * @param userId
+     * @return
+     */
+    @Select("select l.*  from LATELETTER.LETTER_USER_RELATION lur, LATELETTER.LETTER l where lur.user_id = #{userId} AND lur.relation = 2 AND lur.letter_id = l.letter_id")
+    List<Letter> queryUserReceiveLetter(@Param("userId") Long userId);
+
+    /**
+     * 删除用户单封收信
+     * @param letterId
+     * @param userId
+     * @return
+     */
+    @Delete("delete from LETTER_USER_RELATION where letter_id = #{letterId} AND user_id=#{userId} AND relation=2")
+    int deleteUserReceiveLetter(@Param("letterId") Long letterId, @Param("userId") Long userId);
+
 }

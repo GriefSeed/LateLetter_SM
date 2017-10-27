@@ -28,7 +28,7 @@ public class LikeController {
     /**
      * 增加点赞表记录，在创建迟书时要一起调用，根据返回的letterId来创建，否则后续会找不到点赞数量
      * @param letterId
-     * @return 0 表示成功，1 表示失败
+     * @return 0 表示失败，1 表示成功
      */
     @RequestMapping(value = "/addLetterLike")
     public Object addLetterLike(@RequestBody Long letterId){
