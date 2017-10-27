@@ -6,8 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.text.MessageFormat;
 
 @SpringBootTest
-public class StringTest
-{
+public class StringTest {
 
     @Test
     public void stringFormat() throws Exception {
@@ -18,4 +17,15 @@ public class StringTest
         System.out.println(s);
 
     }
+
+    @Test
+    public void stringLength() throws Exception {
+        String[] s1 = null;
+
+        String[] s2 = new String[]{"1"};
+
+        System.out.println(s1 + "       " + s2.length);
+
+    }
+
 }

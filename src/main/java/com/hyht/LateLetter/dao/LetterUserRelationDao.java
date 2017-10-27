@@ -71,4 +71,12 @@ public interface LetterUserRelationDao {
     @Delete("delete from LETTER_USER_RELATION where letter_id = #{letterId} AND user_id=#{userId} AND relation=2")
     int deleteUserReceiveLetter(@Param("letterId") Long letterId, @Param("userId") Long userId);
 
+    /**
+     * 删除该封信的所有收信关系
+     * @param letterId
+     * @return
+     */
+    @Delete("delete from LETTER_USER_RELATION where letter_id = #{letterId} AND relation=2")
+    int deleteAllReceiveLetter(@Param("letterId") Long letterId);
+
 }

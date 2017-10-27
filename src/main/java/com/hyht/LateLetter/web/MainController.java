@@ -40,6 +40,7 @@ public class MainController {
     @Autowired
     UsersService usersService;
 
+
     @Autowired
     LetterUserRelationDao letterUserRelationDao;
 
@@ -130,7 +131,7 @@ public class MainController {
     public Object addLetterWithExtraFile(@RequestBody LetterWithFiles lwf) {
         Letter letter = lwf.getLetter();
         String[] fileList = lwf.getPicList();
-
+        String[] receiverList = lwf.getReceiverList();
 
         try {
             //录入letter，获取letterId，然后对文件进行存储
@@ -171,6 +172,7 @@ public class MainController {
 
             } catch (IOException e) {
                 logger.error("addLetterWithExtraFile_CONTROLLER_ERROR", e);
+                return new ObjWithMsg(null, "F", "插入迟书附件失败");
             }
             //将url存入数据库
             if (!map.isEmpty()) {
@@ -181,32 +183,44 @@ public class MainController {
             return new ObjWithMsg(letter.getLetterId(), "T", "SUCCESS");
         }
 
-        return new ObjWithMsg(letter.getLetterId(), "T", "SUCCESS");
+        try {
+            //插入收信人表
+            if (receiverList != null && receiverList.length > 0) {
+                for (String otherUserId : receiverList) {
+                    letterUserRelationDao.insertLetterUserRelation(new LetterUserRelation(letter.getLetterId(), Long.valueOf(otherUserId), 2));
+                }
+            }
+        } catch (Exception e) {
+            logger.error("addLetterWithExtraFile_CONTROLLER_ERROR_添加收信人失败:", e);
+            return new ObjWithMsg(null, "F", "添加收信人失败");
 
+        }
+
+        return new ObjWithMsg(letter.getLetterId(), "T", "SUCCESS");
     }
 
 
     /**
      * 删除迟书主表、清空文件表和附带文件，暂时没有扣除用户时间
+     *
      * @param letterIdWithUserId
      * @return 0 表示失败，1 表示成功
      */
     @RequestMapping(value = "/deleteLetterWithExtraFile")
-    public Object deleteLetterWithExtraFile(@RequestBody LetterIdWithUserId letterIdWithUserId){
+    public Object deleteLetterWithExtraFile(@RequestBody LetterIdWithUserId letterIdWithUserId) {
         int result = 0;
         Long userId = letterIdWithUserId.getUserId();
         Long letterId = letterIdWithUserId.getLetterId();
         //删除迟书
-        try{
+        try {
             result = letterDao.deleteLetterById(letterId);
             //删除BFile表里的文件索引
-            if(result == 1){
+            if (result == 1) {
                 bFileDao.deleteBfileByLetterId(letterId);
-            }
-            else{
+            } else {
                 throw new Exception("===============no_letter_found=================");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("===============deleteLetterWithExtraFile:================ ", e);
             return new ObjWithMsg(null, "F", "删除信件主体失败");
         }
@@ -216,18 +230,26 @@ public class MainController {
             File file = new File(dirStr);
             //文件夹不存在也行，但files 会为 null
             File[] files = file.listFiles();
-            if(files != null && files.length > 0){
-                for(File temp : files){
-                    if(temp.isFile()){
+            if (files != null && files.length > 0) {
+                for (File temp : files) {
+                    if (temp.isFile()) {
                         temp.delete();
                     }
                 }
                 //最后删除目录
                 file.delete();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("===============deleteLetterWithExtraFile:================ ", e);
             return new ObjWithMsg(null, "F", "删除信件文件失败");
+        }
+
+        //删除对应的收信人,可能没有收信人
+        try{
+            letterUserRelationDao.deleteAllReceiveLetter(letterId);
+        }catch (Exception e){
+            logger.error("===============deleteLetterWithExtraFile:================ ", e);
+            return new ObjWithMsg(null, "F", "删除收信人关联失败");
         }
         return new ObjWithMsg(result, "T", "SUCCESS");
     }
@@ -280,9 +302,9 @@ public class MainController {
             //查询已到期的
             if (deadlineFlag.equals("1")) {
                 letters = letterDao.queryPublicLetterAndBefore();
-                if(letters != null && !letters.isEmpty()){
+                if (letters != null && !letters.isEmpty()) {
                     letterWithUsers = new ArrayList<LetterWithUser>();
-                    for(Letter letter : letters){
+                    for (Letter letter : letters) {
                         letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
                     }
                 }
@@ -290,9 +312,9 @@ public class MainController {
             //查询未到期的
             if (deadlineFlag.equals("0")) {
                 letters = letterDao.queryPublicLetterAndAfter();
-                if(letters != null && !letters.isEmpty()){
+                if (letters != null && !letters.isEmpty()) {
                     letterWithUsers = new ArrayList<LetterWithUser>();
-                    for(Letter letter : letters){
+                    for (Letter letter : letters) {
                         letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
                     }
                 }
@@ -307,19 +329,20 @@ public class MainController {
 
     /**
      * 增加收藏关系
+     *
      * @param letterCollection
      * @return
      */
     @RequestMapping(value = "/addCollection")
-    public Object addCollection(@RequestBody LetterCollection letterCollection){
+    public Object addCollection(@RequestBody LetterCollection letterCollection) {
         // 1表示是收藏关系
         LetterUserRelation letterUserRelation = new LetterUserRelation(letterCollection.getLetterId(), letterCollection.getUserId(), 1);
-        try{
+        try {
             int result = letterUserRelationDao.insertLetterUserRelation(letterUserRelation);
-            if(result != 1){
+            if (result != 1) {
                 throw new Exception("ADDCOLLECTION_RESULT_NOT_ONLY_ONE");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("addCollection: ", e);
             return new ObjWithMsg(null, "F", "INSERT_ERROR");
         }
@@ -329,17 +352,18 @@ public class MainController {
 
     /**
      * 删除收藏关系
+     *
      * @param letterCollection
      * @return
      */
     @RequestMapping(value = "/deleteCollection")
-    public Object deleteCollection(@RequestBody LetterCollection letterCollection){
-        try{
+    public Object deleteCollection(@RequestBody LetterCollection letterCollection) {
+        try {
             int result = letterUserRelationDao.deleteLetterUserCollection(letterCollection.getLetterId(), letterCollection.getUserId());
-            if(result != 1){
+            if (result != 1) {
                 throw new Exception("DELETECOLLECTION_RESULT_NOT_ONLY_ONE");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("deleteCollection: ", e);
             return new ObjWithMsg(null, "F", "DELETE_ERROR");
         }
@@ -348,13 +372,13 @@ public class MainController {
     }
 
     @RequestMapping(value = "/deleteUserCollectionList")
-    public Object deleteUserCollectionList(@RequestBody LetterCollectionList letterCollectionList){
+    public Object deleteUserCollectionList(@RequestBody LetterCollectionList letterCollectionList) {
         try {
             int result = letterUserRelationService.deleteUserCollectionList(letterCollectionList.getUserId(), letterCollectionList.getLetterId());
-            if(result != 1){
+            if (result != 1) {
                 return new ObjWithMsg(null, "F", "DELETEUSERCOLLECTIONLIST_ERROR");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("deleteUserCollectionList:", e);
         }
         return new ObjWithMsg(null, "T", "SUCCESS");
@@ -363,18 +387,19 @@ public class MainController {
 
     /**
      * 查询用户收藏集
+     *
      * @param userId
      * @return
      */
     @RequestMapping(value = "/queryUserCollection")
-    public Object queryUserCollection(@RequestBody Long userId){
+    public Object queryUserCollection(@RequestBody Long userId) {
         List<Long> userCollectionList = null;
-        try{
+        try {
             userCollectionList = letterUserRelationDao.queryCollectionByUserId(userId);
-            if(userCollectionList.isEmpty()){
+            if (userCollectionList.isEmpty()) {
                 return new ObjWithMsg(null, "T", "NO_DATA_FOUND");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("queryUserCollection: ", e);
             return new ObjWithMsg(null, "F", "QUERYUSERCOLLECTION_ERROR");
         }
@@ -384,23 +409,24 @@ public class MainController {
 
     /**
      * 查询收藏集的所有迟书
+     *
      * @param userId
      * @return
      */
     @RequestMapping(value = "/queryLettersCollection")
-    public Object queryLettersCollection(@RequestBody String userId){
+    public Object queryLettersCollection(@RequestBody String userId) {
         List<Letter> letters = null;
         List<LetterWithUser> letterWithUsers = null;
-        try{
+        try {
             letters = letterUserRelationDao.queryCollectionLetters(Long.valueOf(userId));
-            if(letters != null && !letters.isEmpty()){
+            if (letters != null && !letters.isEmpty()) {
                 letterWithUsers = new ArrayList<LetterWithUser>();
-                for(Letter letter : letters){
+                for (Letter letter : letters) {
                     letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
                 }
                 return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("queryLettersCollection: ", e);
             return new ObjWithMsg(null, "F", "QUERYLETTERSCOLLECTION_ERROR");
         }
@@ -410,27 +436,25 @@ public class MainController {
 
     /**
      * 检测该封迟书和用户是否有收藏关系
+     *
      * @param letterCollection
      * @return T代表有，F代表无
      */
     @RequestMapping(value = "/checkCollectionOrNot")
-    public Object checkCollectionOrNot(@RequestBody LetterCollection letterCollection){
-        try{
+    public Object checkCollectionOrNot(@RequestBody LetterCollection letterCollection) {
+        try {
             LetterUserRelation l = letterUserRelationDao.queryCollectionByLetterIdAndUserId(letterCollection.getLetterId(), letterCollection.getUserId());
-            if(l == null){
+            if (l == null) {
                 return new ObjWithMsg(0, "T", "NO_COLLECTION_FOUND");
-            }
-            else{
+            } else {
                 return new ObjWithMsg(1, "T", "SUCCESS");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("queryLettersCollection: ", e);
             return new ObjWithMsg(null, "F", "QUERYLETTERSCOLLECTION_ERROR");
         }
 
     }
-
-
 
 
     @RequestMapping(value = "/test")
@@ -439,16 +463,15 @@ public class MainController {
         Long userId = letterIdWithUserId.getUserId();
         Long letterId = letterIdWithUserId.getLetterId();
         //删除迟书
-        try{
+        try {
             result = letterDao.deleteLetterById(letterId);
             //删除BFile表里的文件索引
-            if(result == 1){
+            if (result == 1) {
                 bFileDao.deleteBfileByLetterId(letterId);
-            }
-            else{
+            } else {
                 throw new Exception("===============no_letter_found=================");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("===============deleteLetterWithExtraFile:================ ", e);
             return new ObjWithMsg(null, "F", "删除信件主体失败");
         }
@@ -458,16 +481,16 @@ public class MainController {
             File file = new File(dirStr);
             //文件夹不存在也行，但files 会为 null
             File[] files = file.listFiles();
-            if(files != null && files.length > 0){
-                for(File temp : files){
-                    if(temp.isFile()){
+            if (files != null && files.length > 0) {
+                for (File temp : files) {
+                    if (temp.isFile()) {
                         temp.delete();
                     }
                 }
                 //最后删除目录
                 file.delete();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("===============deleteLetterWithExtraFile:================ ", e);
             return new ObjWithMsg(null, "F", "删除信件文件失败");
         }

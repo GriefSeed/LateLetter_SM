@@ -5,8 +5,17 @@ import com.hyht.LateLetter.entity.Letter;
 public class LetterWithFiles {
     private Letter letter;
     private String[] picList;
+    private String[] receiverList;
 
     public LetterWithFiles() {
+    }
+
+    public String[] getReceiverList() {
+        return receiverList;
+    }
+
+    public void setReceiverList(String[] receiverList) {
+        this.receiverList = receiverList;
     }
 
     public Letter getLetter() {
