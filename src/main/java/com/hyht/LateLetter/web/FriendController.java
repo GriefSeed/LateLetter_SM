@@ -117,7 +117,7 @@ public class FriendController {
      * @param userId
      * @return null 没有收信， 非null 有收信
      */
-    @RequestMapping(value = "/queryUserReceiveLetter")
+    @RequestMapping(value = "/queryUserReceiveLetters")
     public Object queryUserReceiveLetters(@RequestBody Long userId) {
         List<Letter> letters;
         try {
