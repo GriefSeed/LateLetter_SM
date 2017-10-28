@@ -5,10 +5,7 @@ import com.hyht.LateLetter.EnvirArgs;
 import com.hyht.LateLetter.dao.LetterUserRelationDao;
 import com.hyht.LateLetter.dao.UserRelationDao;
 import com.hyht.LateLetter.dao.UsersDao;
-import com.hyht.LateLetter.dto.LetterIdWithUserId;
-import com.hyht.LateLetter.dto.ObjWithMsg;
-import com.hyht.LateLetter.dto.UserIdWithOtherUserId;
-import com.hyht.LateLetter.dto.UserIdWithSecretKey;
+import com.hyht.LateLetter.dto.*;
 import com.hyht.LateLetter.entity.Letter;
 import com.hyht.LateLetter.entity.UserRelation;
 import com.hyht.LateLetter.entity.Users;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -121,16 +119,23 @@ public class FriendController {
     @RequestMapping(value = "/queryUserReceiveLetters")
     public Object queryUserReceiveLetters(@RequestBody Long userId) {
         List<Letter> letters;
+        List<LetterWithUser> letterWithUsers = null;
         try {
             letters = letterUserRelationDao.queryUserReceiveLetter(userId);
-            if (letters.isEmpty()) {
+            if (letters != null && !letters.isEmpty()) {
+                letterWithUsers = new ArrayList<LetterWithUser>();
+                for (Letter letter : letters) {
+                    letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
+                }
+                return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
+            }
+            else  {
                 return new ObjWithMsg(null, "T", "没有收信");
             }
         } catch (Exception e) {
             logger.error("========================queryUserReceiveLetters=================================: ", e);
             return new ObjWithMsg(null, "F", "查询被收信接口错误");
         }
-        return new ObjWithMsg(letters, "T", "SUCCESS");
     }
 
 
