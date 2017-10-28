@@ -157,7 +157,11 @@ public class APIController {
     }
 
 
-
+    /**
+     * 页面计数功能
+     * @param userId
+     * @return null 失败 非null 成功
+     */
     @RequestMapping("/countNum")
     public Object countNum(@RequestBody Long userId){
         try{
