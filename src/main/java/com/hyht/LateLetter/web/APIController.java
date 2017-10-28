@@ -4,6 +4,9 @@ package com.hyht.LateLetter.web;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.hyht.LateLetter.EnvirArgs;
 import com.hyht.LateLetter.dao.BFileDao;
+import com.hyht.LateLetter.dao.CountDao;
+import com.hyht.LateLetter.dao.UsersDao;
+import com.hyht.LateLetter.dto.CountNum;
 import com.hyht.LateLetter.dto.ObjWithMsg;
 import com.hyht.LateLetter.entity.BFile;
 import com.hyht.LateLetter.util.Util;
@@ -34,6 +37,12 @@ public class APIController {
 
     @Autowired
     BFileDao bFileDao;
+
+    @Autowired
+    CountDao countDao;
+
+    @Autowired
+    UsersDao usersDao;
 
     private final static Logger logger = LoggerFactory.getLogger(APIController.class);
 
@@ -149,9 +158,39 @@ public class APIController {
 
 
 
+    @RequestMapping("/countNum")
+    public Object countNum(@RequestBody Long userId){
+        try{
+            CountNum countNum = new CountNum();
+            countNum.setUserTime(Integer.valueOf(usersDao.queryUserRestTimeById(userId)));
+            countNum.setMyReceiverNum(countDao.queryUserReceivePeopleNum(userId));
+            countNum.setMyAttentionNum(countDao.queryUserAttentionNum(userId));
+            countNum.setMyLetterNum(countDao.queryUserLetterNum(userId));
+            countNum.setMyAcceptLetterNum(countDao.queryUserReceiveLetterNum(userId));
+            countNum.setMyCollectionNum(countDao.queryUserCollectionNum(userId));
+            return new ObjWithMsg(countNum, "T", "SUCCESS");
+        }catch (Exception e){
+            logger.error("======================countNum============================ : ", e);
+            return new ObjWithMsg(null, "F", "查询数量失败");
+        }
+    }
 
-
-
+    @RequestMapping(value = "/test")
+    public Object test(Long userId) throws Exception {
+        try{
+            CountNum countNum = new CountNum();
+            countNum.setUserTime(Integer.valueOf(usersDao.queryUserRestTimeById(userId)));
+            countNum.setMyReceiverNum(countDao.queryUserReceivePeopleNum(userId));
+            countNum.setMyAttentionNum(countDao.queryUserAttentionNum(userId));
+            countNum.setMyLetterNum(countDao.queryUserLetterNum(userId));
+            countNum.setMyAcceptLetterNum(countDao.queryUserReceiveLetterNum(userId));
+            countNum.setMyCollectionNum(countDao.queryUserCollectionNum(userId));
+            return new ObjWithMsg(countNum, "T", "SUCCESS");
+        }catch (Exception e){
+            logger.error("======================countNum============================ : ", e);
+            return new ObjWithMsg(null, "F", "查询数量失败");
+        }
+    }
 
    /* @RequestMapping("/pt")
     public String pt() throws Exception {

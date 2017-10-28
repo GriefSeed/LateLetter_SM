@@ -458,43 +458,15 @@ public class MainController {
 
 
     @RequestMapping(value = "/test")
-    public Object test(LetterIdWithUserId letterIdWithUserId) throws Exception {
-        int result = 0;
-        Long userId = letterIdWithUserId.getUserId();
-        Long letterId = letterIdWithUserId.getLetterId();
-        //删除迟书
-        try {
-            result = letterDao.deleteLetterById(letterId);
-            //删除BFile表里的文件索引
-            if (result == 1) {
-                bFileDao.deleteBfileByLetterId(letterId);
-            } else {
-                throw new Exception("===============no_letter_found=================");
-            }
-        } catch (Exception e) {
-            logger.error("===============deleteLetterWithExtraFile:================ ", e);
-            return new ObjWithMsg(null, "F", "删除信件主体失败");
+    public Object test(Long userId) throws Exception {
+        try{
+            CountNum countNum = new CountNum();
+            countNum.setUserTime(Integer.valueOf(usersDao.queryUserRestTimeById(userId)));
+            return new ObjWithMsg(countNum, "T", "SUCCESS");
+        }catch (Exception e){
+            logger.error("======================countNum============================ : ", e);
+            return new ObjWithMsg(null, "F", "查询数量失败");
         }
-        try {
-            //最后直接删除以信件ID命名的文件夹，有文件夹肯定有文件，没有文件夹就是没有文件
-            String dirStr = EnvirArgs.extraFilePath + "\\letterExtraFile\\" + letterId;
-            File file = new File(dirStr);
-            //文件夹不存在也行，但files 会为 null
-            File[] files = file.listFiles();
-            if (files != null && files.length > 0) {
-                for (File temp : files) {
-                    if (temp.isFile()) {
-                        temp.delete();
-                    }
-                }
-                //最后删除目录
-                file.delete();
-            }
-        } catch (Exception e) {
-            logger.error("===============deleteLetterWithExtraFile:================ ", e);
-            return new ObjWithMsg(null, "F", "删除信件文件失败");
-        }
-        return new ObjWithMsg(result, "T", "SUCCESS");
     }
 
     @RequestMapping(value = "/jsonTest")
