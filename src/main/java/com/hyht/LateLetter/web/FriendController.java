@@ -5,6 +5,7 @@ import com.hyht.LateLetter.EnvirArgs;
 import com.hyht.LateLetter.dao.LetterUserRelationDao;
 import com.hyht.LateLetter.dao.UserRelationDao;
 import com.hyht.LateLetter.dao.UsersDao;
+import com.hyht.LateLetter.dto.LetterIdWithUserId;
 import com.hyht.LateLetter.dto.ObjWithMsg;
 import com.hyht.LateLetter.dto.UserIdWithOtherUserId;
 import com.hyht.LateLetter.dto.UserIdWithSecretKey;
@@ -260,6 +261,23 @@ public class FriendController {
         return new ObjWithMsg(result, "T", "SUCCESS");
     }
 
+    /**
+     * 删除用户的单封收到的迟书
+     * @param letterIdWithUserId
+     * @return 0 表示失败，1 表示成功
+     */
+    @RequestMapping(value = "/deleteSingleReceiveLetter")
+    public Object deleteSingleReceiveLetter(@RequestBody LetterIdWithUserId letterIdWithUserId){
+        int result = 0;
+        try{
+            result = letterUserRelationDao.deleteUserReceiveLetter(letterIdWithUserId.getLetterId(), letterIdWithUserId.getUserId());
+        }catch (Exception e){
+            logger.error("========================deleteSingleReceiveLetter=================================: ", e);
+            return new ObjWithMsg(0, "F", "删除收信失败");
+        }
+        return new ObjWithMsg(result, "T", "SUCCESS");
+    }
+
     @RequestMapping(value = "/test")
     public Object test(UserIdWithOtherUserId userIdWithOtherUserId) {
         int result;
@@ -271,5 +289,8 @@ public class FriendController {
         }
         return new ObjWithMsg(result, "T", "SUCCESS");
     }
+
+
+
 
 }
