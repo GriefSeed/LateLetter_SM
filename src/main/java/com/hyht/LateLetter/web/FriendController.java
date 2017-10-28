@@ -279,15 +279,18 @@ public class FriendController {
     }
 
     @RequestMapping(value = "/test")
-    public Object test(UserIdWithOtherUserId userIdWithOtherUserId) {
-        int result;
+    public Object test(Long userId) {
+        List<Letter> letters;
         try {
-            result = userRelationService.checkUserRelation(userIdWithOtherUserId.getUserId(), userIdWithOtherUserId.getOtherUserId());
+            letters = letterUserRelationDao.queryUserReceiveLetter(userId);
+            if (letters.isEmpty()) {
+                return new ObjWithMsg(null, "T", "没有收信");
+            }
         } catch (Exception e) {
-            logger.error("========================checkUserAttentionAndReceive=================================: ", e);
-            return new ObjWithMsg(null, "F", "检测接口失败");
+            logger.error("========================queryUserReceiveLetters=================================: ", e);
+            return new ObjWithMsg(null, "F", "查询被收信接口错误");
         }
-        return new ObjWithMsg(result, "T", "SUCCESS");
+        return new ObjWithMsg(letters, "T", "SUCCESS");
     }
 
 

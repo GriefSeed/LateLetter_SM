@@ -36,11 +36,11 @@ public interface LetterUserRelationDao {
 
 
     /**
-     * 根据用户ID，查询详细的迟书列表
+     * 根据用户ID，查询详细的迟书列表 收藏是 1
      * @param userId
      * @return
      */
-    @Select("select l.* from LETTER l, LETTER_USER_RELATION lur where l.letter_id = lur.letter_id AND lur.user_id = #{userId} ORDER BY lur.start_time DESC")
+    @Select("select l.* from LETTER l, LETTER_USER_RELATION lur where l.letter_id = lur.letter_id AND lur.user_id = #{userId} AND lur.relation = 1 ORDER BY lur.start_time DESC")
     List<Letter> queryCollectionLetters(@Param("userId") Long userId);
 
 
