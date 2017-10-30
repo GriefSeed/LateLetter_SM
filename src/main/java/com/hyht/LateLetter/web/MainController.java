@@ -217,7 +217,8 @@ public class MainController {
         Long letterId = letterIdWithUserId.getLetterId();
         //删除迟书
         try {
-            result = letterDao.deleteLetterById(letterId);
+            //result = letterDao.deleteLetterById(letterId);
+            result = letterService.deleteLetter(letterId, userId);
             //删除BFile表里的文件索引
             if (result == 1) {
                 bFileDao.deleteBfileByLetterId(letterId);
