@@ -135,7 +135,11 @@ public class MainController {
 
         try {
             //录入letter，获取letterId，然后对文件进行存储
-            letterDao.insertLetter(letter);
+            //letterDao.insertLetter(letter);
+            Long result = letterService.insertLetter(letter);
+            if(result == 0){
+                return new ObjWithMsg(null, "F", "时间不够");
+            }
         } catch (Exception e) {
             logger.error("addLetterWithExtraFile: ", e);
             return new ObjWithMsg(null, "F", "INSERT_LETTER_MAIN_ERROR");

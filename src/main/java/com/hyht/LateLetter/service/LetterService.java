@@ -12,7 +12,7 @@ public interface LetterService {
     /**
      * 创建迟书，创建时扣除时间、以天为单位
      * @param l
-     * @return 书信ID，用于插入附件文件
+     * @return 失败，返回0（时间不够），成功，书信ID，用于插入附件文件
      */
     long insertLetter(Letter l);
 

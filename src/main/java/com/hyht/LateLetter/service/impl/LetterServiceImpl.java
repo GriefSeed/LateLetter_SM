@@ -67,6 +67,7 @@ public class LetterServiceImpl implements LetterService {
     }
 
 
+
     @Override
     public int deleteLetter(Long letterId, Long userId) {
         int result = 0;
