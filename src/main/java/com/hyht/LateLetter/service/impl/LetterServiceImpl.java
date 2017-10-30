@@ -37,6 +37,11 @@ public class LetterServiceImpl implements LetterService {
         double day = (l.getDeadline().getTime() - l.getStartDate().getTime()) / (1000 * 3600 * 24);
         //不足一天算一天
         Integer costDay = (int) Math.ceil(day);
+        //转换为秒，如果不能被60 * 60 * 24 整除，即秒数不为0, 那么就 + 1
+        double surplus = ((l.getDeadline().getTime() - l.getStartDate().getTime())/1000) % (24 * 60 * 60);
+        if(surplus > 0){
+            costDay = costDay + 1;
+        }
         //时间不够的，插入失败
         if (costDay > restTimeBefore) {
             return 0;
@@ -77,6 +82,11 @@ public class LetterServiceImpl implements LetterService {
         double day = (l.getDeadline().getTime() - l.getStartDate().getTime()) / (1000 * 3600 * 24);
         //不足一天算一天
         Integer costDay = (int) Math.ceil(day);
+        //转换为秒，如果不能被60 * 60 * 24 整除，即秒数不为0 那么就 + 1
+        double surplus = ((l.getDeadline().getTime() - l.getStartDate().getTime())/1000) % (24 * 60 * 60);
+        if(surplus > 0){
+            costDay = costDay + 1;
+        }
         Integer userRestTime = Integer.valueOf(uTemp.getRestTime());
         //当用户时间大于或等于该封迟书的封存时间时，才允许删除
         if (userRestTime >= costDay) {
