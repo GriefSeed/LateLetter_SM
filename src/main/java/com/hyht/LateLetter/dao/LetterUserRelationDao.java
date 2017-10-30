@@ -55,11 +55,11 @@ public interface LetterUserRelationDao {
 
 
     /**
-     * 查询用户收信箱
+     * 查询用户收信箱，未到期、不可知的不查
      * @param userId
      * @return
      */
-    @Select("select l.*  from LATELETTER.LETTER_USER_RELATION lur, LATELETTER.LETTER l where lur.user_id = #{userId} AND lur.relation = 2 AND lur.letter_id = l.letter_id")
+    @Select("select l.*  from LATELETTER.LETTER_USER_RELATION lur, LATELETTER.LETTER l where lur.user_id = #{userId} AND lur.relation = 2 AND lur.letter_id = l.letter_id AND NOT (l.count_down = 0 AND l.deadline > sysdate)")
     List<Letter> queryUserReceiveLetter(@Param("userId") Long userId);
 
     /**

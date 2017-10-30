@@ -125,12 +125,7 @@ public class FriendController {
             if (letters != null && !letters.isEmpty()) {
                 letterWithUsers = new ArrayList<LetterWithUser>();
                 for (Letter letter : letters) {
-                    // 如果是 信件 未到期未知 且 时间还未到期的，剔去
-                    if(letter.getCountDown() == 0 && letter.getDeadline().getTime() > (new Date()).getTime()){
-                        continue;
-                    }else{
-                        letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
-                    }
+                    letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(letter.getUserId()), letter));
                 }
                 return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
             }

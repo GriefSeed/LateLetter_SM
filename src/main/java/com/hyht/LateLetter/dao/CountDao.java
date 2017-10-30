@@ -31,10 +31,10 @@ public interface CountDao {
     int queryUserLetterNum(@Param("userId") Long userId);
 
     /**
-     * 收到迟书数量
+     * 收到迟书数量，没有未到期，不可知的选项
      * @return
      */
-    @Select("select count(*) from LATELETTER.LETTER_USER_RELATION lur where lur.user_id = #{userId} AND lur.relation = 2")
+    @Select("select count(*) from LATELETTER.LETTER_USER_RELATION lur, LATELETTER.LETTER l where lur.user_id = #{userId} AND lur.relation = 2 AND lur.letter_id = l.letter_id AND NOT (l.count_down = 0 AND l.deadline > sysdate)")
     int queryUserReceiveLetterNum(@Param("userId") Long userId);
 
     /**
