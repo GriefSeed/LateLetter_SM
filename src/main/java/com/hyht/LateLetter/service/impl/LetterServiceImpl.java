@@ -91,7 +91,7 @@ public class LetterServiceImpl implements LetterService {
         //当用户时间大于或等于该封迟书的封存时间时，才允许删除
         if (userRestTime >= costDay) {
             //等价扣除相同时间
-            uTemp.setRestTime(String.valueOf(userRestTime - costDay));
+            usersDao.updateUserRestTime(String.valueOf(userRestTime - costDay), userId);
             result = letterDao.deleteLetterById(letterId);
         }
         return result;
