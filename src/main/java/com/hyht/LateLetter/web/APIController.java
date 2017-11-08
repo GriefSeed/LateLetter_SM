@@ -8,6 +8,7 @@ import com.hyht.LateLetter.dao.CountDao;
 import com.hyht.LateLetter.dao.LetterDao;
 import com.hyht.LateLetter.dao.UsersDao;
 import com.hyht.LateLetter.dto.CountNum;
+import com.hyht.LateLetter.dto.LetterWithUser;
 import com.hyht.LateLetter.dto.ObjWithMsg;
 import com.hyht.LateLetter.entity.BFile;
 import com.hyht.LateLetter.entity.Letter;
@@ -222,7 +223,11 @@ public class APIController {
                 }
             }
             if (!aimList.isEmpty()) {
-                return new ObjWithMsg(aimList, "T", "SUCCESS");
+                List<LetterWithUser> letterWithUsers = new ArrayList<LetterWithUser>();
+                for (Letter l : aimList) {
+                    letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(l.getUserId()), l));
+                }
+                return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
             } else {
                 return new ObjWithMsg(null, "T", "SUCCESS");
             }
@@ -238,9 +243,8 @@ public class APIController {
             Letter tempById = null;
             List<Letter> listTempByTitle = null;
             List<Letter> aimList = new ArrayList<Letter>();
-            //将字符串转为数字寸，先搜迟书ID，再搜标题
+            //先用正则判断是否是数字串，先搜迟书ID，再搜标题
             Matcher isNum = NUM_JUDGE.matcher(content);
-
             if (isNum.matches()) {
                 Long letterId = Long.valueOf(content);
                 tempById = letterDao.queryLetterById(letterId);
@@ -256,7 +260,11 @@ public class APIController {
                 }
             }
             if (!aimList.isEmpty()) {
-                return new ObjWithMsg(aimList, "T", "SUCCESS");
+                List<LetterWithUser> letterWithUsers = new ArrayList<LetterWithUser>();
+                for (Letter l : aimList) {
+                    letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(l.getUserId()), l));
+                }
+                return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
             } else {
                 return new ObjWithMsg(null, "T", "SUCCESS");
             }
