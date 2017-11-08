@@ -5,17 +5,22 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.hyht.LateLetter.EnvirArgs;
 import com.hyht.LateLetter.dao.BFileDao;
 import com.hyht.LateLetter.dao.CountDao;
+import com.hyht.LateLetter.dao.LetterDao;
 import com.hyht.LateLetter.dao.UsersDao;
 import com.hyht.LateLetter.dto.CountNum;
 import com.hyht.LateLetter.dto.ObjWithMsg;
 import com.hyht.LateLetter.entity.BFile;
+import com.hyht.LateLetter.entity.Letter;
 import com.hyht.LateLetter.util.Util;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Base64Utils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -23,6 +28,8 @@ import javax.servlet.ServletContext;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/API")
@@ -44,7 +51,12 @@ public class APIController {
     @Autowired
     UsersDao usersDao;
 
+    @Autowired
+    LetterDao letterDao;
+
     private final static Logger logger = LoggerFactory.getLogger(APIController.class);
+
+    private static Pattern NUM_JUDGE = Pattern.compile("[0-9]*");
 
     @RequestMapping(value = "/addPic")
     public List addPic(@RequestBody String[] picArray) throws Exception {
@@ -123,7 +135,7 @@ public class APIController {
             filePath.mkdirs();
         }
         ;
-        Map<String, Integer> map  = new HashMap<String, Integer>();
+        Map<String, Integer> map = new HashMap<String, Integer>();
         //写入文件，返回url
         try {
             for (MultipartFile file : fileList) {
@@ -159,12 +171,13 @@ public class APIController {
 
     /**
      * 页面计数功能
+     *
      * @param userId
      * @return null 失败 非null 成功
      */
     @RequestMapping("/countNum")
-    public Object countNum(@RequestBody Long userId){
-        try{
+    public Object countNum(@RequestBody Long userId) {
+        try {
             CountNum countNum = new CountNum();
             countNum.setUserTime(Integer.valueOf(usersDao.queryUserRestTimeById(userId)));
             countNum.setMyReceiverNum(countDao.queryUserReceivePeopleNum(userId));
@@ -173,26 +186,83 @@ public class APIController {
             countNum.setMyAcceptLetterNum(countDao.queryUserReceiveLetterNum(userId));
             countNum.setMyCollectionNum(countDao.queryUserCollectionNum(userId));
             return new ObjWithMsg(countNum, "T", "SUCCESS");
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("======================countNum============================ : ", e);
             return new ObjWithMsg(null, "F", "查询数量失败");
         }
     }
 
+
+    /**
+     * 搜索功能
+     *
+     * @param content
+     * @return null 表示 搜索为空，非null，有内容
+     */
+    @RequestMapping("/searchFun")
+    public Object searchFun(@RequestBody String content) {
+        try {
+            Letter tempById = null;
+            List<Letter> listTempByTitle = null;
+            List<Letter> aimList = new ArrayList<Letter>();
+            //先用正则判断是否是数字串，先搜迟书ID，再搜标题
+            Matcher isNum = NUM_JUDGE.matcher(content);
+            if (isNum.matches()) {
+                Long letterId = Long.valueOf(content);
+                tempById = letterDao.queryLetterById(letterId);
+                if (tempById != null) {
+                    aimList.add(tempById);
+                }
+            } else {
+                listTempByTitle = letterDao.queryLetterByTitle(content);
+                if (listTempByTitle != null) {
+                    for (Letter l : listTempByTitle) {
+                        aimList.add(l);
+                    }
+                }
+            }
+            if (!aimList.isEmpty()) {
+                return new ObjWithMsg(aimList, "T", "SUCCESS");
+            } else {
+                return new ObjWithMsg(null, "T", "SUCCESS");
+            }
+        } catch (Exception e) {
+            logger.error("======================searchFun============================ : ", e);
+            return new ObjWithMsg(null, "F", "搜索失败");
+        }
+    }
+
     @RequestMapping(value = "/test")
-    public Object test(Long userId) throws Exception {
-        try{
-            CountNum countNum = new CountNum();
-            countNum.setUserTime(Integer.valueOf(usersDao.queryUserRestTimeById(userId)));
-            countNum.setMyReceiverNum(countDao.queryUserReceivePeopleNum(userId));
-            countNum.setMyAttentionNum(countDao.queryUserAttentionNum(userId));
-            countNum.setMyLetterNum(countDao.queryUserLetterNum(userId));
-            countNum.setMyAcceptLetterNum(countDao.queryUserReceiveLetterNum(userId));
-            countNum.setMyCollectionNum(countDao.queryUserCollectionNum(userId));
-            return new ObjWithMsg(countNum, "T", "SUCCESS");
-        }catch (Exception e){
-            logger.error("======================countNum============================ : ", e);
-            return new ObjWithMsg(null, "F", "查询数量失败");
+    public Object test(String content) throws Exception {
+        try {
+            Letter tempById = null;
+            List<Letter> listTempByTitle = null;
+            List<Letter> aimList = new ArrayList<Letter>();
+            //将字符串转为数字寸，先搜迟书ID，再搜标题
+            Matcher isNum = NUM_JUDGE.matcher(content);
+
+            if (isNum.matches()) {
+                Long letterId = Long.valueOf(content);
+                tempById = letterDao.queryLetterById(letterId);
+                if (tempById != null) {
+                    aimList.add(tempById);
+                }
+            } else {
+                listTempByTitle = letterDao.queryLetterByTitle(content);
+                if (listTempByTitle != null) {
+                    for (Letter l : listTempByTitle) {
+                        aimList.add(l);
+                    }
+                }
+            }
+            if (!aimList.isEmpty()) {
+                return new ObjWithMsg(aimList, "T", "SUCCESS");
+            } else {
+                return new ObjWithMsg(null, "T", "SUCCESS");
+            }
+        } catch (Exception e) {
+            logger.error("======================searchFun============================ : ", e);
+            return new ObjWithMsg(null, "F", "搜索失败");
         }
     }
 

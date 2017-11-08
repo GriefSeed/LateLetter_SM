@@ -40,6 +40,13 @@ public interface LetterDao {
     List<Letter> queryPublicLetterAndAfter();
 
 
+    /**
+     * 使用like模糊查询迟书标题
+     * @param title
+     * @return
+     */
+    @Select("select * from LATELETTER.LETTER l where l.title like '%'||#{title}||'%' order by l.start_date desc")
+    List<Letter> queryLetterByTitle(@Param("title") String title);
 
 
 }
