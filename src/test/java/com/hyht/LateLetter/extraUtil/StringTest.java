@@ -49,4 +49,15 @@ public class StringTest {
         System.out.println(time1.getTime() +"  ======    "+time2.getTime() + "  ====   " + day + "   =====      " + costDay);
     }
 
+
+    @Test
+    public void timeTest2() throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date time1 = dateFormat.parse("2013-11-11 23:10:00");
+        Date time2 = dateFormat.parse("2013-11-12 23:10:00");
+        double clock = (time2.getTime() - time1.getTime())/(1000 * 60);
+        //转换为分钟，看看是否大于24 * 60 即1440分钟
+        System.out.println(clock + " hhh ");
+
+    }
 }

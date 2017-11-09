@@ -2,10 +2,7 @@ package com.hyht.LateLetter.web;
 
 
 import com.hyht.LateLetter.EnvirArgs;
-import com.hyht.LateLetter.dao.BFileDao;
-import com.hyht.LateLetter.dao.LetterDao;
-import com.hyht.LateLetter.dao.LetterUserRelationDao;
-import com.hyht.LateLetter.dao.UsersDao;
+import com.hyht.LateLetter.dao.*;
 import com.hyht.LateLetter.dto.*;
 import com.hyht.LateLetter.entity.*;
 import com.hyht.LateLetter.service.LetterService;
@@ -49,6 +46,9 @@ public class MainController {
 
     @Autowired
     LetterService letterService;
+
+    @Autowired
+    LastLoginTimeDao lastLoginTimeDao;
 
 
     private final static Logger logger = LoggerFactory.getLogger(MainController.class);
@@ -95,6 +95,8 @@ public class MainController {
             return new ObjWithMsg(null, "F", "REGISTER_ERROR");
         }
         if (result == 1) {
+            //新增用户最近登陆时间
+            lastLoginTimeDao.insertUserLastLoginTime(userTemp.getUserId());
             return new ObjWithMsg(userTemp, "T", "SUCCESS");
         } else {
             return new ObjWithMsg(null, "F", "PHONE_EXISTED");

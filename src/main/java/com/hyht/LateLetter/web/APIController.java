@@ -3,15 +3,13 @@ package com.hyht.LateLetter.web;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.hyht.LateLetter.EnvirArgs;
-import com.hyht.LateLetter.dao.BFileDao;
-import com.hyht.LateLetter.dao.CountDao;
-import com.hyht.LateLetter.dao.LetterDao;
-import com.hyht.LateLetter.dao.UsersDao;
+import com.hyht.LateLetter.dao.*;
 import com.hyht.LateLetter.dto.CountNum;
 import com.hyht.LateLetter.dto.LetterWithUser;
 import com.hyht.LateLetter.dto.ObjWithMsg;
 import com.hyht.LateLetter.entity.BFile;
 import com.hyht.LateLetter.entity.Letter;
+import com.hyht.LateLetter.service.LastLoginTimeServicel;
 import com.hyht.LateLetter.util.Util;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
@@ -54,6 +52,12 @@ public class APIController {
 
     @Autowired
     LetterDao letterDao;
+
+    @Autowired
+    LastLoginTimeDao lastLoginTimeDao;
+
+    @Autowired
+    LastLoginTimeServicel lastLoginTimeServicel;
 
     private final static Logger logger = LoggerFactory.getLogger(APIController.class);
 
@@ -237,40 +241,81 @@ public class APIController {
         }
     }
 
-    @RequestMapping(value = "/test")
-    public Object test(String content) throws Exception {
+
+    /**
+     * 判断该次登陆是否应该增加用户时间，time < 24，不增加，24 <= time <= 24 * 2 连续登陆，24 * 2 < time 非连续登陆
+     * @param userId
+     * @return 0 表示没有增加时间 1 表示增加了30天 ，2 表示 连续登陆，增加了30 * 3 天
+     */
+    @RequestMapping(value = "/judgeLoginTime")
+    public Object judgeLoginTime(@RequestBody Long userId){
         try {
-            Letter tempById = null;
-            List<Letter> listTempByTitle = null;
-            List<Letter> aimList = new ArrayList<Letter>();
-            //先用正则判断是否是数字串，先搜迟书ID，再搜标题
-            Matcher isNum = NUM_JUDGE.matcher(content);
-            if (isNum.matches()) {
-                Long letterId = Long.valueOf(content);
-                tempById = letterDao.queryLetterById(letterId);
-                if (tempById != null) {
-                    aimList.add(tempById);
-                }
-            } else {
-                listTempByTitle = letterDao.queryLetterByTitle(content);
-                if (listTempByTitle != null) {
-                    for (Letter l : listTempByTitle) {
-                        aimList.add(l);
-                    }
+            Date lastLoginTime = lastLoginTimeDao.queryUserLastLoginTime(userId);
+            //比较当前时间和最近登陆时间，得出时间差，连续登陆送3 * 30 天（少于24小时），非连续登陆只送30天（大于24小时）
+            double clock = ((new Date()).getTime() - lastLoginTime.getTime())/(1000 * 60);
+            //转换为分钟，看看是否大于24 * 60 即1440分钟
+            //24小时内登陆，不增加时间
+            if(clock < 1440){
+                return new ObjWithMsg(0,"T","SUCCESS");
+            }
+            //大于24小时，小于48小时，是连续登陆，送30 * 3 天
+            if(1440 <= clock && clock <= 2880){
+                int result = lastLoginTimeServicel.updateUserLastLoginTime(userId, 2);
+                if(result == 1){
+                    return new ObjWithMsg(2,"T","SUCCESS");
+                }else{
+                    return new ObjWithMsg(null,"F","查询每日登陆失败");
                 }
             }
-            if (!aimList.isEmpty()) {
-                List<LetterWithUser> letterWithUsers = new ArrayList<LetterWithUser>();
-                for (Letter l : aimList) {
-                    letterWithUsers.add(new LetterWithUser(usersDao.queryUserById(l.getUserId()), l));
+            //大于48小时，非连续登陆，送30天
+            if(clock > 2880){
+                int result = lastLoginTimeServicel.updateUserLastLoginTime(userId, 1);
+                if(result == 1){
+                    return new ObjWithMsg(1,"T","SUCCESS");
+                }else{
+                    return new ObjWithMsg(null,"F","查询每日登陆失败");
                 }
-                return new ObjWithMsg(letterWithUsers, "T", "SUCCESS");
-            } else {
-                return new ObjWithMsg(null, "T", "SUCCESS");
             }
-        } catch (Exception e) {
-            logger.error("======================searchFun============================ : ", e);
-            return new ObjWithMsg(null, "F", "搜索失败");
+            return new ObjWithMsg(0,"T","SUCCESS");
+        }catch (Exception e){
+            logger.error("======================judgeLoginTime============================ : ", e);
+            return new ObjWithMsg(null,"F","查询每日登陆失败");
+        }
+    }
+
+    @RequestMapping(value = "/test")
+    public Object test(Long userId) throws Exception {
+        try {
+            Date lastLoginTime = lastLoginTimeDao.queryUserLastLoginTime(userId);
+            //比较当前时间和最近登陆时间，得出时间差，连续登陆送3 * 30 天（少于24小时），非连续登陆只送30天（大于24小时）
+            double clock = ((new Date()).getTime() - lastLoginTime.getTime())/(1000 * 60);
+            //转换为分钟，看看是否大于24 * 60 即1440分钟
+            //24小时内登陆，不增加时间
+            if(clock < 1440){
+                return new ObjWithMsg(0,"T","SUCCESS");
+            }
+            //大于24小时，小于48小时，是连续登陆，送30 * 3 天
+            if(1440 <= clock && clock <= 2880){
+                int result = lastLoginTimeServicel.updateUserLastLoginTime(userId, 2);
+                if(result == 1){
+                    return new ObjWithMsg(2,"T","SUCCESS");
+                }else{
+                    return new ObjWithMsg(null,"F","查询每日登陆失败");
+                }
+            }
+            //大于48小时，非连续登陆，送30天
+            if(clock > 2880){
+                int result = lastLoginTimeServicel.updateUserLastLoginTime(userId, 1);
+                if(result == 1){
+                    return new ObjWithMsg(1,"T","SUCCESS");
+                }else{
+                    return new ObjWithMsg(null,"F","查询每日登陆失败");
+                }
+            }
+            return new ObjWithMsg(0,"T","SUCCESS");
+        }catch (Exception e){
+            logger.error("======================judgeLoginTime============================ : ", e);
+            return new ObjWithMsg(null,"F","查询每日登陆失败");
         }
     }
 
